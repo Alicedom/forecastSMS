@@ -1,4 +1,4 @@
-import sms.getdatadb.SMSRule;
+import sms.SMSRule;
 
 /*
     Class for weather data per hour

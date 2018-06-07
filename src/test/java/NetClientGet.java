@@ -1,5 +1,3 @@
-package api.getapi;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.BufferedReader;
@@ -67,6 +65,7 @@ public class NetClientGet {
                     float visibility = object.getFloat("visibility");
                     float ozone = object.getFloat("ozone");
 
+                    System.out.println(ozone);
                 }
             }
 

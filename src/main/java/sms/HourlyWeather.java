@@ -1,4 +1,4 @@
-package sms.getdatadb;
+package sms;
 
 /*
     Class for weather data per hour

@@ -1,4 +1,4 @@
-package sms.getdatadb;
+package sms;
 
 import java.util.LinkedList;
 import java.util.List;
