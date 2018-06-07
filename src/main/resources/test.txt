@@ -1,0 +1,14 @@
+Trạm 002040B0 dự báo cho 1 ngày tới: 
+Nhiệt độ tối đa: 27.52
+Nhiệt độ tối thiểu: 21.91
+Độ ẩm trung bình: 81
+Hướng gió nhiều nhất: Nam tây nam
+Dự báo buổi mưa: 
+Buổi Sáng có mưa 25.0mm với xác suất 0
+Buổi Tối có mưa 124.0mm với xác suất 0
+Buổi Chiều tối có mưa 111.0mm với xác suất 0
+Buổi Trưa có mưa 49.0mm với xác suất 0
+Buổi Đêm có mưa 110.0mm với xác suất 0
+Buổi Chiều có mưa 69.0mm với xác suất 0
+Buổi Sáng sớm có mưa 124.0mm với xác suất 0
+
