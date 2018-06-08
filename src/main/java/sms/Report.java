@@ -10,9 +10,11 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.text.Normalizer;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class Report {
     private final String LOG_FILENAME = "src/main/resources/test.txt";
@@ -63,16 +65,16 @@ public class Report {
                 cell = sheet.getRow(row).getCell(0);
                 cell.setCellValue(date);
 
-                String smsDay = null;
+                String sms = null;
                 if (listStationHourlyData == null || listStationHourlyData.isEmpty()) {
-                    smsDay = "Trạm "+ station.getStation_name_vi()+" không có dữ liệu dự báo\n";
+                    sms = "Trạm "+ station.getStation_name_vi()+" không có dữ liệu dự báo\n";
                 } else {
                     SessionFormular formular = new SessionFormular(listStationHourlyData);
 
-                    smsDay = "Trạm "  + station.getStation_name_vi()+ getSMSReport(date, formular);
+                    sms = "Trạm "  + station.getStation_name_vi()+ getSMSReport(date, formular);
 
                     if (listStationHourlyData.size() < 24) {
-                        smsDay = "Trạm "+ station.getStation_name_vi()+" tính trên số giờ dữ liệu "+listStationHourlyData.size()+getSMSReport(date, formular);
+                        sms = "Trạm "+ station.getStation_name_vi()+" tính trên số giờ dữ liệu "+listStationHourlyData.size()+getSMSReport(date, formular);
                     }
 
                     float sumUV = formular.getTotalUV();
@@ -117,11 +119,13 @@ public class Report {
                 }
 
                 cell = sheet.getRow(row).getCell(21);
-                cell.setCellValue(smsDay);
+                cell.setCellValue(sms);
+
+                cell = sheet.getRow(row).getCell(22);
+                cell.setCellValue(getNonSign(sms));
                 //log
                 try {
-                    System.out.println(smsDay);
-                    Files.write(Paths.get(LOG_FILENAME), smsDay.getBytes(), StandardOpenOption.APPEND);
+                    Files.write(Paths.get(LOG_FILENAME), sms.getBytes(), StandardOpenOption.APPEND);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -166,5 +170,11 @@ public class Report {
 
         return report.toString();
 
+    }
+
+    private String getNonSign(String s){
+        String nfdNormalizedString = Normalizer.normalize(s, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(nfdNormalizedString).replaceAll("");
     }
 }
