@@ -21,9 +21,16 @@ public class Report {
 
     private final int START_ROW = 3;
     private final int NUMBER_FORECAST = 5;
+    private  Dao query;
 
     public Report() {
 
+        if(query == null){
+            query = new Dao();
+        }
+    }
+
+    public void fromWebsite(String website){
         FileInputStream templateFile = null;
         XSSFWorkbook workbook = null;
 
@@ -36,35 +43,37 @@ public class Report {
             e.printStackTrace();
         }
 
-        Dao query = new Dao();
-        List<Station> litStation = query.getStationEnalbeApi();
+        List<Station> listStation = query.getStationEnalbeApi();
 
-        for (int i = 0; i < litStation.size(); i++) {
-            Station station = litStation.get(i);
+        for (int i = 0; i < listStation.size(); i++) {
+            Station station = listStation.get(i);
 
             XSSFSheet sheet = workbook.cloneSheet(0, station.getStation_name_vi());
 
             for (int forecastDay = 0; forecastDay < NUMBER_FORECAST; forecastDay++) {
                 int row = START_ROW + forecastDay;
-                List<HourlyWeather> listStationHourlyData = query.getDataHourly(station.getStation_code(), "darksky", forecastDay);
+                List<HourlyWeather> listStationHourlyData = query.getDataHourly(station.getStation_code(), website, forecastDay);
 
                 Cell cell = null;
                 //Update the value of cell
+
                 Calendar calendar = Calendar.getInstance();
                 calendar.add(Calendar.DATE, forecastDay);
-                String date = calendar.get(Calendar.DATE) + "-" + (calendar.get(Calendar.MONTH)+1);
+                String date = calendar.get(Calendar.DATE) + "-" + (calendar.get(Calendar.MONTH)+1)+"-"+calendar.get(Calendar.YEAR);
                 cell = sheet.getRow(row).getCell(0);
                 cell.setCellValue(date);
 
                 String smsDay = null;
-                if (listStationHourlyData.size() == 0) {
+                if (listStationHourlyData == null || listStationHourlyData.isEmpty()) {
                     smsDay = "Trạm "+ station.getStation_name_vi()+" không có dữ liệu dự báo\n";
-                } else if (listStationHourlyData.size() < 24) {
-                    smsDay = "Trạm "+ station.getStation_name_vi()+" không đủ dữ liệu, chỉ có "+listStationHourlyData.size()+ "h\n";
                 } else {
                     SessionFormular formular = new SessionFormular(listStationHourlyData);
 
                     smsDay = "Trạm "  + station.getStation_name_vi()+ getSMSReport(date, formular);
+
+                    if (listStationHourlyData.size() < 24) {
+                        smsDay = "Trạm "+ station.getStation_name_vi()+" tính trên số giờ dữ liệu "+listStationHourlyData.size()+getSMSReport(date, formular);
+                    }
 
                     float sumUV = formular.getTotalUV();
                     cell = sheet.getRow(row).getCell(1);
@@ -139,7 +148,6 @@ public class Report {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     private String getSMSReport(String date, SessionFormular formular) {
@@ -151,7 +159,7 @@ public class Report {
         report.append(".\n" + formular.getReport_MinTemperature());
         report.append(".\n" + formular.getReport_AverageHumidity());
         report.append(".\n" + formular.getReport_MaxWindDirect());
-        report.append(". " + formular.getReport_AverageWindSpeed());
+        report.append(" " + formular.getReport_AverageWindSpeed());
         report.append(".\n" + formular.getReport_NumberMaxSun());
         report.append(". " + formular.getReport_RainAndPercentRain());
         report.append(".\n");

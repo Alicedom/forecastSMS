@@ -35,8 +35,18 @@ public class GetData {
 		return data;
 	}
 
+	public  List getHourlyForecastFromAPI(Station station, String apiKey, String website){
+		List listData = null;
+		if(website.equals("accuweather")){
+			listData = getAccuweatherHourlyForecastFromAPI(station,apiKey);
+		}else if(website.equals("darksky")){
+			listData = getDarkskyHourlyForecastFromAPI(station,apiKey);
+		}
+		return listData;
+	}
+
 	// get darksky hourly forecast from api
-	public List<DarkskyHourly> getDarkskyHourlyForecastFromAPI(Station station, String darkskyKey) {
+	private List<DarkskyHourly> getDarkskyHourlyForecastFromAPI(Station station, String darkskyKey) {
 		List<DarkskyHourly> listForecast = null;
 
 		String url = "https://api.darksky.net/forecast/darkkey/latlon?units=si";
@@ -57,7 +67,7 @@ public class GetData {
 	}
 
 	// get accuweather hourly forcast form api
-	public List<AccuweatherHourly> getAccuweatherHourlyForecastFromAPI(Station station, String accuweatherKey) {
+	private List<AccuweatherHourly> getAccuweatherHourlyForecastFromAPI(Station station, String accuweatherKey) {
 		String URL = "http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/locationKey?apikey=accuweatherKey&details=true&metric=true";
 
 		URL = URL.replace("locationKey",station.getAccuweather_key()).replace("accuweatherKey",accuweatherKey);
@@ -69,7 +79,6 @@ public class GetData {
 		List<AccuweatherHourly> listForecast = gson.fromJson(json, token.getType());
 		return listForecast;
 	}
-
 
 	// lay cac locationkey theo lat,lon
 	public String requestGetAccuweatherLocationKey(String latlon, String accuweatherKey) {

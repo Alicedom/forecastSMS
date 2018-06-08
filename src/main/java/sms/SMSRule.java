@@ -118,32 +118,32 @@ public class SMSRule {
 
     };
     private static final Object[][] getRainSMSRule={
-            {null,null,"Không mưa"},
-            {0.0,0.3,"Mưa nhỏ lượng không đáng kể"},
-            {0.3,3.0,"Mưa nhỏ"},
-            {3.0,8.0,"Mưa"},
-            {8.0,25.0,"Mưa vừa"},
-            {25.0,50.0,"Mưa to"},
-            {50.0,null,"Mưa rất to"}
+            {null,null," không mưa"},
+            {0.0,0.3," mưa nhỏ lượng không đáng kể"},
+            {0.3,3.0," mưa nhỏ"},
+            {3.0,8.0," mưa"},
+            {8.0,25.0," mưa vừa"},
+            {25.0,50.0," mưa to"},
+            {50.0,null," mưa rất to"}
     };
 
     private static final Object[][] getWindDirectSMSRule={
             {0.0,11.5,"Bắc"},
-            {11.5,33.5,"Bắc đông bắc"},
-            {33.5,56.5,"Đông bắc"},
-            {56.5,78.5,"Đông đông bắc"},
+            {11.5,33.5,"Bắc Đông Bắc"},
+            {33.5,56.5,"Đông Bắc"},
+            {56.5,78.5,"Đông Đông Bắc"},
             {78.5,101.5,"Đông"},
-            {101.5,123.5,"Đông đông nam"},
-            {123.5,146.5,"Đông nam"},
-            {146.5,168.5,"Nam đông nam"},
+            {101.5,123.5,"Đông Đông Nam"},
+            {123.5,146.5,"Đông Nam"},
+            {146.5,168.5,"Nam Đông Nam"},
             {168.5,191.5,"Nam"},
-            {191.5,213.5,"Nam tây nam"},
-            {213.5,236.5,"Tây nam"},
-            {236.5,258.5,"Tây tây nam"},
+            {191.5,213.5,"Nam Tây Nam"},
+            {213.5,236.5,"Tây Nam"},
+            {236.5,258.5,"Tây Tây Nam"},
             {258.5,281.5,"Tây"},
-            {281.5,303.5,"Tây tây bắc"},
-            {303.5,326.5,"Tây bắc"},
-            {326.5,348.5,"Bắc tây bắc"},
+            {281.5,303.5,"Tây Tây Bắc"},
+            {303.5,326.5,"Tây Bắc"},
+            {326.5,348.5,"Bắc Tây Bắc"},
             {348.5,360.5,"Bắc"}
     };
 

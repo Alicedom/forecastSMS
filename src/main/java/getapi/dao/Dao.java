@@ -33,6 +33,40 @@ public class Dao {
         }
     }
 
+    public ArrayList<Station> getStationEnalbeApi() {
+        ArrayList<Station> listStation = new ArrayList<Station>();
+
+        String sql = "SELECT * FROM stations s WHERE s.api_enable = TRUE";
+
+        Statement statement;
+
+        try {
+            statement = conn.createStatement();
+            ResultSet rs = statement.executeQuery(sql);
+
+            while (rs.next()) {
+
+                String station_code = rs.getString("station_code");
+                String station_name = rs.getString("station_name");
+                String station_name_vi = rs.getString("station_name_vi");
+                float lat = rs.getFloat("lat");
+                float lon = rs.getFloat("lon");
+                String accuweather_key = rs.getString("accuweather_key");
+
+                Station station = new Station(station_code, station_name, station_name_vi, lat, lon, accuweather_key);
+                listStation.add(station);
+            }
+
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return listStation;
+    }
+
+
     public String getApiKey(String source) {
         String apiKey = null;
         String id = null;
@@ -80,46 +114,25 @@ public class Dao {
         return apiKey;
     }
 
-    // get station
-    public ArrayList<Station> getStationEnalbeApi() {
-        ArrayList<Station> listStation = new ArrayList<Station>();
 
-        String sql = "SELECT * FROM stations s WHERE s.api_enable = TRUE";
+    public void saveHourlyData(List listForecast, String station_code, String website) {
+        java.util.Date date= new java.util.Date();
+        String time = new Timestamp(date.getTime()).toString();
 
-        Statement statement;
-
-        try {
-            statement = conn.createStatement();
-            ResultSet rs = statement.executeQuery(sql);
-
-            while (rs.next()) {
-
-                String station_code = rs.getString("station_code");
-                String station_name = rs.getString("station_name");
-                String station_name_vi = rs.getString("station_name_vi");
-                float lat = rs.getFloat("lat");
-                float lon = rs.getFloat("lon");
-                String accuweather_key = rs.getString("accuweather_key");
-
-                Station station = new Station(station_code, station_name, station_name_vi,lat, lon, accuweather_key);
-                listStation.add(station);
-            }
-
-            statement.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (website.equals("accuweather")) {
+            saveAccuweatherHourlyData(listForecast, station_code, time);
+        } else if (website.equals("darksky")) {
+            saveDarkskyHourlyData(listForecast, station_code, time);
         }
 
-        return listStation;
     }
 
     // save darksky hourly forecast data
-    public void saveDarkskyHourlyData(List<DarkskyHourly> listForecast, String station_code, String updated_time) {
+    private void saveDarkskyHourlyData(List<DarkskyHourly> listForecast, String station_code, String updated_time) {
         String sql = "INSERT INTO darksky_hourly(station_code, time, summary, total_liquid, probability, "
-                + "liquid_type, temperature, realfile_temperature, dew_point, humidity, pressure, wind_speed, windgust_speed, "
-                + "wind_edge, cloud_cover, uv_index, ozone, updated_time,icon, wind_direction, visibility)"
-                + "\nVALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+                + " liquid_type, temperature, realfile_temperature, dew_point, humidity, pressure, wind_speed, windgust_speed, "
+                + " wind_edge, cloud_cover, uv_index, ozone, updated_time,icon, wind_direction, visibility)"
+                + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
 
 
         PreparedStatement statement = null;
@@ -167,13 +180,13 @@ public class Dao {
     }
 
     // save accuweather hourly data
-    public void saveAccuweatherHourlyData(List<AccuweatherHourly> listForecast, String station_code, String updated_time) {
+    private void saveAccuweatherHourlyData(List<AccuweatherHourly> listForecast, String station_code, String updated_time) {
 
         String sql = "INSERT INTO accuweather_hourly(station_code, updated_time, time, is_day_light, temperature, "
-                + "realfile_temperature, wetbulb_temperature, dew_point, wind_speed, wind_direction, wind_edge, windgust_speed, "
-                + "humidity, visibility, ceiling, uv_index, probability, rain_probability, snow_probability, "
-                + "ice_probability, total_liquid, rain, snow, ice, cloud_cover, icon )"
-                + "\nVALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+                + " realfile_temperature, wetbulb_temperature, dew_point, wind_speed, wind_direction, wind_edge, windgust_speed, "
+                + " humidity, visibility, ceiling, uv_index, probability, rain_probability, snow_probability, "
+                + " ice_probability, total_liquid, rain, snow, ice, cloud_cover, icon,liquid_type )"
+                + " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
 
         PreparedStatement statement = null;
         for (AccuweatherHourly forecast : listForecast) {
@@ -208,6 +221,16 @@ public class Dao {
                 statement.setString(24, forecast.getIce().getValue().toString());
                 statement.setInt(25, forecast.getCloudCover());
                 statement.setString(26, forecast.getIconPhrase());
+                String liquid_type = null;
+                if (forecast.getRain().getValue() > 0) {
+                    liquid_type = "rain";
+                } else if (forecast.getIce().getValue() > 0) {
+                    // dong nhat theo du lieu darksky
+                    liquid_type = "sleet";
+                } else if (forecast.getSnow().getValue() > 0) {
+                    liquid_type = "snow";
+                }
+                statement.setString(27, liquid_type);
 
                 statement.addBatch();
                 statement.executeBatch();
@@ -257,14 +280,14 @@ public class Dao {
 
         String tableHourly = website + "_hourly";
 
-        String SQL = "SELECT a.time,a.station_code,a.total_liquid,a.probability,a.temperature,a.uv_index,a.humidity,a.wind_speed,a.wind_edge\n" +
-                " FROM " + tableHourly + " a\n" +
-                " WHERE a.id IN (SELECT\tMAX(id) AS id FROM " + tableHourly + " a \n" +
-                " WHERE DATE(a.time) = (CURDATE() + INTERVAL " + after_day + " DAY) AND a.station_code = '" + station_code +"'"+
+        String SQL = "SELECT a.time,a.station_code,a.total_liquid,a.probability,a.temperature,a.uv_index,a.humidity,a.wind_speed,a.wind_edge" +
+                " FROM " + tableHourly + " a" +
+                " WHERE a.id IN (SELECT\tMAX(id) AS id FROM " + tableHourly + " a " +
+                " WHERE DATE(a.time) = (CURDATE() + INTERVAL " + after_day + " DAY) AND a.station_code = '" + station_code + "'" +
                 " GROUP BY a.station_code,a.time) ";
 
         //check SQL
-        System.out.println("get data: "+ station_code + " website: "+website+ " = " +SQL);
+        System.out.println("get data: " + station_code + " website: " + website + " = " + SQL);
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(SQL);

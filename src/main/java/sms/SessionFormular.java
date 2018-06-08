@@ -1,8 +1,9 @@
 package sms;
 
-import org.apache.http.cookie.SM;
-
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 /*
     calculate sum, max, min, average data from List of Weather forecast Data
@@ -28,20 +29,23 @@ public class SessionFormular {
         minTemperature = Float.MAX_VALUE;
         averageHumidity = 0;
         averageWindSpeed = 0.0f;
-        numberMaxSun =0;
+        numberMaxSun = 0;
         totalUV = 0;
         rain = new Hashtable<String, Float>();
         percentRain = new Hashtable<String, Integer>();
 
-        if(list.size() == 24){
+        if (list.size() > 0) {
+            if (list.size() != 24) {
+                System.out.println("Không đủ dữ liệu 24h");
+            }
             calculateAverageHumidity();
             calculateAverageWindSpeed();
             calculateMinMaxTemperatue();
             calculateRainAndPercentRain();
             calculateMaxWindDirect();
             calculateAvgUVAndNumberMaxSun();
-        }else{
-            System.out.println("Không đủ dữ liệu 24h để tính toán");
+        } else {
+            System.out.println("Không có dữ liệu để tính toán");
         }
 
     }
@@ -126,7 +130,7 @@ public class SessionFormular {
         while (iter.hasMoreElements()) {
             String key = iter.nextElement();
 
-            float rainmount = (float) (Math.round(rain.get(key)*10.0)/10.0);
+            float rainmount = (float) (Math.round(rain.get(key) * 10.0) / 10.0);
             if (rainmount == 0 || percentRain.get(key) < 20) {
                 rain.remove(key);
                 percentRain.remove(key);
@@ -135,7 +139,7 @@ public class SessionFormular {
 
     }
 
-    private void calculateNumberSum(){
+    private void calculateNumberSum() {
         Hashtable<String, Integer> listSun = new Hashtable<String, Integer>();
 
         for (HourlyWeather data : list) {
@@ -150,16 +154,16 @@ public class SessionFormular {
         System.out.println("listSun.toString() = " + listSun.toString());
     }
 
-    private void calculateAvgUVAndNumberMaxSun(){
+    private void calculateAvgUVAndNumberMaxSun() {
 
         int uvRuleSize = SMSRule.getUvSMSRule().length;
-        String maxSun = (String) SMSRule.getUvSMSRule()[uvRuleSize-1][2];
+        String maxSun = (String) SMSRule.getUvSMSRule()[uvRuleSize - 1][2];
 
-        for (HourlyWeather data : list){
-            totalUV +=data.getUv_index();
+        for (HourlyWeather data : list) {
+            totalUV += data.getUv_index();
 
-            if(maxSun.equals(getTypeOfSun(data.getUv_index()))){
-                numberMaxSun ++;
+            if (maxSun.equals(getTypeOfSun(data.getUv_index()))) {
+                numberMaxSun++;
             }
         }
     }
@@ -168,77 +172,76 @@ public class SessionFormular {
         return SMSRule.getSession(data.getHour());
     }
 
-    private String getTypeOfSun(float uvData){
+    private String getTypeOfSun(float uvData) {
         return SMSRule.smsGenerateElement(uvData, SMSRule.getUvSMSRule());
     }
 
     public String getMaxTemperature() {
 
-        if(maxTemperature == Float.MIN_VALUE)
+        if (maxTemperature == Float.MIN_VALUE)
             return "";
         else
-            return String.valueOf((float) (Math.round(maxTemperature*10.0)/10.0));
+            return String.valueOf(String.valueOf(Math.round(maxTemperature)));
     }
 
-    public String getReport_MaxTemperature(){
-        String report =null;
+    public String getReport_MaxTemperature() {
+        String report = null;
 
-        if(maxTemperature == Float.MIN_VALUE){
+        if (maxTemperature == Float.MIN_VALUE) {
             report = "Không có nhiệt độ cao nhất";
-        }else{
-            report = "Nhiệt độ cao nhất: " + maxTemperature+" độ C";
+        } else {
+            report = "Nhiệt độ cao nhất: " + String.valueOf(Math.round(maxTemperature)) + " độ C";
         }
 
         return report;
     }
 
     public String getMinTemperature() {
-        if(minTemperature == Float.MAX_VALUE)
+        if (minTemperature == Float.MAX_VALUE)
             return "";
         else
-            return String.valueOf((float) (Math.round(minTemperature*10.0)/10.0));
+            return String.valueOf(Math.round(minTemperature));
     }
 
-    public String getReport_MinTemperature(){
-        String report =null;
+    public String getReport_MinTemperature() {
+        String report = null;
 
-        if(minTemperature == Float.MAX_VALUE){
+        if (minTemperature == Float.MAX_VALUE) {
             report = "Không có nhiệt độ thấp nhất";
-        }else{
-            report = "Nhiệt độ thấp nhất: " + minTemperature +" độ C";
+        } else {
+            report = "Nhiệt độ thấp nhất: " + String.valueOf(Math.round(minTemperature)) + " độ C";
         }
 
         return report;
     }
 
-    public float getAverageHumidity() {
-        return (float) (Math.round(averageHumidity*10.0)/10.0);
+    public int getAverageHumidity() {
+        return Math.round(averageHumidity);
     }
 
-    public String getReport_AverageHumidity(){
-        String report =null;
+    public String getReport_AverageHumidity() {
+        String report = null;
 
-        if(averageHumidity == 0){
+        if (averageHumidity == 0) {
             report = "Không có độ ẩm trung bình";
-        }else{
-            report = "Độ ẩm trung bình: " + (float) (Math.round(averageHumidity*10.0)/10.0)+"%";
+        } else {
+            report = "Độ ẩm trung bình: " + Math.round(averageHumidity) + "%";
         }
 
         return report;
     }
 
     public float getAverageWindSpeed() {
-        return (float) (Math.round(averageWindSpeed*10.0)/10.0);
+        return (float) (Math.round(averageWindSpeed * 10.0) / 10.0);
     }
 
-    public String getReport_AverageWindSpeed(){
-        String report =null;
+    public String getReport_AverageWindSpeed() {
+        String report = null;
 
-        if(averageWindSpeed == 0){
-            report = "Không có tốc độ gió trung bình";
-        }else{
-            report = "Tốc độ gió trung bình: " + (float) (Math.round(averageWindSpeed*10.0)/10.0) +"m/s. Cấp gió "
-                    + SMSRule.smsGenerateElement(averageWindSpeed, SMSRule.getWindSpeedConvertLevelRule());
+        if (averageWindSpeed == 0) {
+            report = "";
+        } else {
+            report = "cấp " + SMSRule.smsGenerateElement(averageWindSpeed, SMSRule.getWindSpeedConvertLevelRule());
         }
 
         return report;
@@ -249,12 +252,12 @@ public class SessionFormular {
     }
 
     public String getReport_MaxWindDirect() {
-        String report =null;
+        String report = null;
 
-        if(maxWindDirect == null){
-            report = "Không có hướng gió thịnh hành";
-        }else{
-            report = "Hướng gió thịnh hành: " + maxWindDirect;
+        if (maxWindDirect == null) {
+            report = "";
+        } else {
+            report = "Gió " + maxWindDirect;
         }
 
         return report;
@@ -274,13 +277,17 @@ public class SessionFormular {
         StringBuilder rainSMS = new StringBuilder();
 
         if (rain.isEmpty()) {
-            rainSMS.append("Trời không mưa trong cả ngày");
+            rainSMS.append("Không mưa");
         } else {
-            Set<String> keys = rain.keySet();
+            List<String> keys = SMSRule.getListSMS(SMSRule.getSession());
+            System.out.println(keys.toString());
 
-            rainSMS.append( "Dự báo buổi mưa:");
+            rainSMS.append("Dự báo buổi mưa:");
             for (String key : keys) {
-                rainSMS.append("\n").append("Buổi ").append(key).append(" có mưa ").append(rain.get(key)).append("mm với xác suất ").append(percentRain.get(key));
+                if (rain.containsKey(key)) {
+                    rainSMS.append("\n").append(key).append(SMSRule.smsGenerateElement(rain.get(key), SMSRule.getGetRainSMSRule()));
+//                rainSMS.append("\n").append(key).append(" có mưa ").append(String.valueOf(Math.round(rain.get(key) * 10.0) / 10.0)).append("mm xác suất ").append(percentRain.get(key)).append("%");
+                }
             }
         }
         return rainSMS.toString();
@@ -290,13 +297,14 @@ public class SessionFormular {
         return numberMaxSun;
     }
 
-    public String getReport_NumberMaxSun(){
-        String report =null;
+    public String getReport_NumberMaxSun() {
+        String report = null;
 
-        if(numberMaxSun == 0){
-            report = "Không có nắng";
-        }else{
-            report = "Giờ nắng trong ngày: " + numberMaxSun;;
+        if (numberMaxSun == 0) {
+            report = "Không nắng";
+        } else {
+            report = "Giờ nắng trong ngày: " + numberMaxSun;
+            ;
         }
 
         return report;
@@ -307,13 +315,14 @@ public class SessionFormular {
         return totalUV;
     }
 
-    public String getReport_TotalUV(){
-        String report =null;
+    public String getReport_TotalUV() {
+        String report = null;
 
-        if(totalUV == 0){
-            report = "Không có nắng";
-        }else{
-            report = "Trung bình bức xạ trong ngày: " + totalUV;;
+        if (totalUV == 0) {
+            report = "Không nắng";
+        } else {
+            report = "Trung bình bức xạ trong ngày: " + totalUV;
+            ;
         }
 
         return report;
