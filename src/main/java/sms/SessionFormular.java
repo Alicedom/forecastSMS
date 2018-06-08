@@ -1,5 +1,7 @@
 package sms;
 
+import org.apache.http.cookie.SM;
+
 import java.util.*;
 
 /*
@@ -28,18 +30,18 @@ public class SessionFormular {
         averageWindSpeed = 0.0f;
         numberMaxSun =0;
         totalUV = 0;
-
         rain = new Hashtable<String, Float>();
         percentRain = new Hashtable<String, Integer>();
 
-
-        if(! list.isEmpty()){
+        if(list.size() == 24){
             calculateAverageHumidity();
             calculateAverageWindSpeed();
             calculateMinMaxTemperatue();
             calculateRainAndPercentRain();
             calculateMaxWindDirect();
             calculateAvgUVAndNumberMaxSun();
+        }else{
+            System.out.println("Không đủ dữ liệu 24h để tính toán");
         }
 
     }
@@ -152,7 +154,6 @@ public class SessionFormular {
 
         int uvRuleSize = SMSRule.getUvSMSRule().length;
         String maxSun = (String) SMSRule.getUvSMSRule()[uvRuleSize-1][2];
-        System.out.println("maxSun = " + maxSun);
 
         for (HourlyWeather data : list){
             totalUV +=data.getUv_index();
@@ -185,7 +186,7 @@ public class SessionFormular {
         if(maxTemperature == Float.MIN_VALUE){
             report = "Không có nhiệt độ cao nhất";
         }else{
-            report = "Nhiệt độ cao nhất: " + maxTemperature;
+            report = "Nhiệt độ cao nhất: " + maxTemperature+" độ C";
         }
 
         return report;
@@ -204,7 +205,7 @@ public class SessionFormular {
         if(minTemperature == Float.MAX_VALUE){
             report = "Không có nhiệt độ thấp nhất";
         }else{
-            report = "Nhiệt độ thấp nhất: " + minTemperature;
+            report = "Nhiệt độ thấp nhất: " + minTemperature +" độ C";
         }
 
         return report;
@@ -220,7 +221,7 @@ public class SessionFormular {
         if(averageHumidity == 0){
             report = "Không có độ ẩm trung bình";
         }else{
-            report = "Độ ẩm trung bình: " + (float) (Math.round(averageHumidity*10.0)/10.0);
+            report = "Độ ẩm trung bình: " + (float) (Math.round(averageHumidity*10.0)/10.0)+"%";
         }
 
         return report;
@@ -236,7 +237,8 @@ public class SessionFormular {
         if(averageWindSpeed == 0){
             report = "Không có tốc độ gió trung bình";
         }else{
-            report = "Tốc độ gió trung bình: " + (float) (Math.round(averageWindSpeed*10.0)/10.0);
+            report = "Tốc độ gió trung bình: " + (float) (Math.round(averageWindSpeed*10.0)/10.0) +"m/s. Cấp gió "
+                    + SMSRule.smsGenerateElement(averageWindSpeed, SMSRule.getWindSpeedConvertLevelRule());
         }
 
         return report;
@@ -252,7 +254,7 @@ public class SessionFormular {
         if(maxWindDirect == null){
             report = "Không có hướng gió thịnh hành";
         }else{
-            report = "Hướng gió thịnh hành: " + maxWindDirect;;
+            report = "Hướng gió thịnh hành: " + maxWindDirect;
         }
 
         return report;

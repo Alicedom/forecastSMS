@@ -1,7 +1,5 @@
 package sms;
 
-import com.aspose.cells.SaveFormat;
-import com.aspose.cells.Workbook;
 import getapi.dao.Dao;
 import getapi.models.Station;
 import org.apache.poi.ss.usermodel.Cell;
@@ -19,59 +17,54 @@ import java.util.List;
 public class Report {
     private final String LOG_FILENAME = "src/main/resources/test.txt";
     private final String TEMP_FILENAME = "src/main/resources/template.xlsx";
-    private final String OUT_FILENAME = "src/main/resources/Bản tin thời tiết tự động";
+    private final String OUT_FILENAME = "src/main/resources/Bản tin thời tiết tự động.xlsx";
 
-    private List<Station> litStation;
-    private FileInputStream file;
-    private XSSFWorkbook workbook;
-    private FileOutputStream outFile;
+    private final int START_ROW = 3;
+    private final int NUMBER_FORECAST = 5;
 
     public Report() {
-        Dao query = new Dao();
 
-        litStation = query.getEnalbeApiStation();
+        FileInputStream templateFile = null;
+        XSSFWorkbook workbook = null;
 
         try {
-            file = new FileInputStream(new File(TEMP_FILENAME));
+            templateFile = new FileInputStream(new File(TEMP_FILENAME));
+            workbook = new XSSFWorkbook(templateFile);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        try {
-            workbook = new XSSFWorkbook(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        Dao query = new Dao();
+        List<Station> litStation = query.getStationEnalbeApi();
 
         for (int i = 0; i < litStation.size(); i++) {
             Station station = litStation.get(i);
-            String stationCode = station.getStation_code();
 
-            List<HourlyWeather> listStationHourlyData = query.getDataHourly(stationCode, "darksky", 0);
-            if (listStationHourlyData == null) {
-                System.out.println("Trạm không có dữ liệu dự báo: " + station.getStation_name());
-            } else {
+            XSSFSheet sheet = workbook.cloneSheet(0, station.getStation_name_vi());
 
-                System.out.println("Trạm có dữ liệu dự báo: " + station.getStation_name() + " size: " + listStationHourlyData.size());
+            for (int forecastDay = 0; forecastDay < NUMBER_FORECAST; forecastDay++) {
+                int row = START_ROW + forecastDay;
+                List<HourlyWeather> listStationHourlyData = query.getDataHourly(station.getStation_code(), "darksky", forecastDay);
 
-                SessionFormular formular = new SessionFormular(listStationHourlyData);
-                XSSFSheet sheet = workbook.cloneSheet(0, station.getStation_name());
-                String sms = null;
                 Cell cell = null;
-                int row = 3;
-
-
                 //Update the value of cell
                 Calendar calendar = Calendar.getInstance();
-                String date = calendar.get(Calendar.DATE) + "-" + calendar.get(Calendar.MONTH);
+                calendar.add(Calendar.DATE, forecastDay);
+                String date = calendar.get(Calendar.DATE) + "-" + (calendar.get(Calendar.MONTH)+1);
                 cell = sheet.getRow(row).getCell(0);
                 cell.setCellValue(date);
 
-                if (listStationHourlyData.size() != 0) {
+                String smsDay = null;
+                if (listStationHourlyData.size() == 0) {
+                    smsDay = "Trạm "+ station.getStation_name_vi()+" không có dữ liệu dự báo\n";
+                } else if (listStationHourlyData.size() < 24) {
+                    smsDay = "Trạm "+ station.getStation_name_vi()+" không đủ dữ liệu, chỉ có "+listStationHourlyData.size()+ "h\n";
+                } else {
+                    SessionFormular formular = new SessionFormular(listStationHourlyData);
 
+                    smsDay = "Trạm "  + station.getStation_name_vi()+ getSMSReport(date, formular);
 
                     float sumUV = formular.getTotalUV();
                     cell = sheet.getRow(row).getCell(1);
@@ -112,34 +105,30 @@ public class Report {
                             }
                         }
                     }
-
-                    sms = getSMSReport(station.getStation_name(), date, formular);
-                    cell = sheet.getRow(row).getCell(21);
-                    System.out.println("SMS:"+sms);
-                    cell.setCellValue(sms);
-
-                    try {
-                        Files.write(Paths.get(LOG_FILENAME), sms.getBytes(), StandardOpenOption.APPEND);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                } else {
-                    sms = "Trạm không có dữ liệu";
                 }
 
+                cell = sheet.getRow(row).getCell(21);
+                cell.setCellValue(smsDay);
+                //log
+                try {
+                    System.out.println(smsDay);
+                    Files.write(Paths.get(LOG_FILENAME), smsDay.getBytes(), StandardOpenOption.APPEND);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
-
+        FileOutputStream outFile = null;
         try {
-            outFile = new FileOutputStream(new File(OUT_FILENAME + ".xlsx"), true);
+            outFile = new FileOutputStream(new File(OUT_FILENAME), true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
         try {
 
-            file.close();
+            templateFile.close();
             workbook.removeSheetAt(0);
             workbook.write(outFile);
             outFile.flush();
@@ -153,33 +142,19 @@ public class Report {
 
     }
 
-    public void convertReport() {
-        try {
-            Workbook workbook = new Workbook(OUT_FILENAME + ".xlsx");
-
-            // save in different formats
-
-            workbook.save(OUT_FILENAME + ".pdf", SaveFormat.PDF);
-            workbook.save(OUT_FILENAME + ".xps", SaveFormat.XPS);
-            workbook.save(OUT_FILENAME + ".html", SaveFormat.HTML);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String getSMSReport(String station, String date, SessionFormular formular) {
+    private String getSMSReport(String date, SessionFormular formular) {
 
         StringBuilder report = new StringBuilder();
 
-        report.append("\n\nDự báo ngày: ").append(date);
-        report.append("\nTrạm ").append(station).append(" dự báo cho 1 ngày tới: ");
-        report.append("\n" + formular.getReport_MaxTemperature());
-        report.append("\n" + formular.getReport_MinTemperature());
-        report.append("\n" + formular.getReport_AverageHumidity());
-        report.append("\n" + formular.getReport_MaxWindDirect());
-        report.append("\n" + formular.getReport_RainAndPercentRain());
-        report.append("\n" + formular.getReport_AverageWindSpeed());
-        report.append("\n" + formular.getReport_NumberMaxSun());
+        report.append(".\nDự báo ngày: ").append(date);
+        report.append(".\n" + formular.getReport_MaxTemperature());
+        report.append(".\n" + formular.getReport_MinTemperature());
+        report.append(".\n" + formular.getReport_AverageHumidity());
+        report.append(".\n" + formular.getReport_MaxWindDirect());
+        report.append(". " + formular.getReport_AverageWindSpeed());
+        report.append(".\n" + formular.getReport_NumberMaxSun());
+        report.append(". " + formular.getReport_RainAndPercentRain());
+        report.append(".\n");
 
         return report.toString();
 

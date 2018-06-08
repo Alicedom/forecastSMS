@@ -11,7 +11,7 @@ public class Main {
 
         ArrayList<Station> listStation = null;
 
-        listStation = dao.getEnalbeApiStation();
+        listStation = dao.getStationEnalbeApi();
         int numThread = listStation.size();// kich thuoc cua thread pool
         System.out.println("Number active station: " + numThread);
 

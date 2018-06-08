@@ -3,13 +3,15 @@ package getapi.models;
 public class Station {
 	private String station_code;
 	private String station_name;
+	private String station_name_vi;
 	private float lat;
 	private float lon;
 	private String accuweather_key;
 
-	public Station(String station_code, String station_name, float lat, float lon, String accuweather_key) {
+	public Station(String station_code, String station_name, String station_name_vi, float lat, float lon, String accuweather_key) {
 		this.station_code = station_code;
 		this.station_name = station_name;
+		this.station_name_vi = station_name_vi;
 		this.lat = lat;
 		this.lon = lon;
 		this.accuweather_key = accuweather_key;
@@ -20,6 +22,7 @@ public class Station {
 		return "Station{" +
 				"station_code='" + station_code + '\'' +
 				", station_name='" + station_name + '\'' +
+				", station_name_vi='" + station_name_vi + '\'' +
 				", lat=" + lat +
 				", lon=" + lon +
 				", accuweather_key='" + accuweather_key + '\'' +
@@ -40,6 +43,14 @@ public class Station {
 
 	public void setStation_name(String station_name) {
 		this.station_name = station_name;
+	}
+
+	public String getStation_name_vi() {
+		return station_name_vi;
+	}
+
+	public void setStation_name_vi(String station_name_vi) {
+		this.station_name_vi = station_name_vi;
 	}
 
 	public float getLat() {

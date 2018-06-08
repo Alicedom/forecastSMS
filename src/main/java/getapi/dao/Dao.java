@@ -81,7 +81,7 @@ public class Dao {
     }
 
     // get station
-    public ArrayList<Station> getEnalbeApiStation() {
+    public ArrayList<Station> getStationEnalbeApi() {
         ArrayList<Station> listStation = new ArrayList<Station>();
 
         String sql = "SELECT * FROM stations s WHERE s.api_enable = TRUE";
@@ -96,11 +96,12 @@ public class Dao {
 
                 String station_code = rs.getString("station_code");
                 String station_name = rs.getString("station_name");
+                String station_name_vi = rs.getString("station_name_vi");
                 float lat = rs.getFloat("lat");
                 float lon = rs.getFloat("lon");
                 String accuweather_key = rs.getString("accuweather_key");
 
-                Station station = new Station(station_code, station_name, lat, lon, accuweather_key);
+                Station station = new Station(station_code, station_name, station_name_vi,lat, lon, accuweather_key);
                 listStation.add(station);
             }
 
