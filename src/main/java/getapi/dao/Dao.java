@@ -16,10 +16,10 @@ public class Dao {
     private Connection conn = null;
 
     public Dao() {
-        String hostName = "localhost";
-        String dbName = "climate";
+        String hostName = "192.168.0.252";
+        String dbName = "fieldclimate";
         String userName = "root";
-        String password = "";
+        String password = "123456aA";
         String dbURL = "jdbc:mysql://" + hostName + ":3306/" + dbName
                 + "?useSSL=false&useUnicode=true&characterEncoding=utf8";
 
@@ -36,7 +36,7 @@ public class Dao {
     public ArrayList<Station> getStationEnalbeApi() {
         ArrayList<Station> listStation = new ArrayList<Station>();
 
-        String sql = "SELECT * FROM stations s WHERE s.api_enable = TRUE";
+        String sql = "SELECT * FROM station s WHERE s.api_enable = TRUE";
 
         Statement statement;
 
@@ -66,6 +66,32 @@ public class Dao {
         return listStation;
     }
 
+    // update accuweather_key
+    public void updateKey(ArrayList<Station> listStation) {
+
+        String sql = "update station set accuweather_key = ? WHERE station_code = ?;";
+
+        PreparedStatement statement = null;
+
+
+        for (Station station : listStation) {
+            try {
+                statement = conn.prepareStatement(sql);
+                statement.setString(1, station.getAccuweather_key());
+                statement.setString(2, station.getStation_code());
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     public String getApiKey(String source) {
         String apiKey = null;
@@ -246,32 +272,7 @@ public class Dao {
         }
     }
 
-    // update accuweather_key
-    public void updateKey(ArrayList<Station> listStation) {
 
-        String sql = "update stations set accuweather_key = ? WHERE station_code = ?;";
-
-        PreparedStatement statement = null;
-
-
-        for (Station station : listStation) {
-            try {
-                statement = conn.prepareStatement(sql);
-                statement.setString(1, station.getAccuweather_key());
-                statement.setString(2, station.getStation_code());
-                statement.executeUpdate();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-        try {
-            statement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-    }
 
 
     //getDataHourly
