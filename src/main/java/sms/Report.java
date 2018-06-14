@@ -1,5 +1,6 @@
 package sms;
 
+import getapi.control.Utils;
 import getapi.dao.Dao;
 import getapi.models.Station;
 import org.apache.poi.ss.usermodel.Cell;
@@ -7,9 +8,6 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.text.Normalizer;
 import java.util.Calendar;
 import java.util.Hashtable;
@@ -17,22 +15,25 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class Report {
-    private final String LOG_FILENAME = "src/main/resources/test.txt";
+    private final String LOG = "data/log/forecastSMS/Report.txt";
+    private final String ERR_LOG = "data/log/forecastSMS/errReport.txt";
     private final String TEMP_FILENAME = "src/main/resources/template.xlsx";
-    private final String OUT_FILENAME = "src/main/resources/Bản tin thời tiết tự động.xlsx";
+    private final String OUT_FILENAME = "data/report/Bản tin thời tiết tự động.xlsx";
 
     private final int START_ROW = 3;
     private final int NUMBER_FORECAST = 5;
-    private  Dao query;
+
+
+    private Dao query;
 
     public Report() {
 
-        if(query == null){
+        if (query == null) {
             query = new Dao();
         }
     }
 
-    public void fromWebsite(String website){
+    public void fromWebsite(String website) {
         FileInputStream templateFile = null;
         XSSFWorkbook workbook = null;
 
@@ -40,9 +41,9 @@ public class Report {
             templateFile = new FileInputStream(new File(TEMP_FILENAME));
             workbook = new XSSFWorkbook(templateFile);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Utils.log(ERR_LOG, e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            Utils.log(ERR_LOG, e.getMessage());
         }
 
         List<Station> listStation = query.getStationEnalbeApi();
@@ -61,20 +62,20 @@ public class Report {
 
                 Calendar calendar = Calendar.getInstance();
                 calendar.add(Calendar.DATE, forecastDay);
-                String date = calendar.get(Calendar.DATE) + "-" + (calendar.get(Calendar.MONTH)+1)+"-"+calendar.get(Calendar.YEAR);
+                String date = calendar.get(Calendar.DATE) + "-" + (calendar.get(Calendar.MONTH) + 1) + "-" + calendar.get(Calendar.YEAR);
                 cell = sheet.getRow(row).getCell(0);
                 cell.setCellValue(date);
 
                 String sms = null;
                 if (listStationHourlyData == null || listStationHourlyData.isEmpty()) {
-                    sms = "Trạm "+ station.getStation_name_vi()+" không có dữ liệu dự báo\n";
+                    sms = "Trạm " + station.getStation_name_vi() + " không có dữ liệu dự báo\n";
                 } else {
                     SessionFormular formular = new SessionFormular(listStationHourlyData);
 
-                    sms = "Trạm "  + station.getStation_name_vi()+ getSMSReport(date, formular);
+                    sms = "Trạm " + station.getStation_name_vi() + getSMSReport(date, formular);
 
                     if (listStationHourlyData.size() < 24) {
-                        sms = "Trạm "+ station.getStation_name_vi()+" tính trên số giờ dữ liệu "+listStationHourlyData.size()+getSMSReport(date, formular);
+                        sms = "Trạm " + station.getStation_name_vi() + " tính trên số giờ dữ liệu " + listStationHourlyData.size() + getSMSReport(date, formular);
                     }
 
                     float sumUV = formular.getTotalUV();
@@ -124,11 +125,7 @@ public class Report {
                 cell = sheet.getRow(row).getCell(22);
                 cell.setCellValue(getNonSign(sms));
                 //log
-                try {
-                    Files.write(Paths.get(LOG_FILENAME), sms.getBytes(), StandardOpenOption.APPEND);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                Utils.log(LOG, sms);
             }
         }
 
@@ -148,9 +145,9 @@ public class Report {
             outFile.close();
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            Utils.log(ERR_LOG, e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            Utils.log(ERR_LOG, e.getMessage());
         }
     }
 
@@ -172,7 +169,8 @@ public class Report {
 
     }
 
-    private String getNonSign(String s){
+    // ham tra ve sms khong dau
+    private String getNonSign(String s) {
         String nfdNormalizedString = Normalizer.normalize(s, Normalizer.Form.NFD);
         Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
         return pattern.matcher(nfdNormalizedString).replaceAll("");

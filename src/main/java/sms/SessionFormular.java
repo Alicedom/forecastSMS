@@ -1,5 +1,7 @@
 package sms;
 
+import getapi.control.Utils;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -10,15 +12,14 @@ import java.util.Map;
  */
 public class SessionFormular {
 
+    private final String LOG_FILENAME = "data/log/forecastSMS/SessionFormular.txt";
     private List<HourlyWeather> list;
-
     private float maxTemperature, minTemperature;
     private float averageHumidity;
     private String maxWindDirect;
     private float averageWindSpeed;
     private int numberMaxSun;
     private float totalUV;
-
     private Hashtable<String, Float> rain;
     private Hashtable<String, Integer> percentRain;
 
@@ -36,7 +37,7 @@ public class SessionFormular {
 
         if (list.size() > 0) {
             if (list.size() != 24) {
-                System.out.println("Không đủ dữ liệu 24h");
+                Utils.log(LOG_FILENAME, "Không đủ dữ liệu 24h");
             }
             calculateAverageHumidity();
             calculateAverageWindSpeed();
@@ -45,7 +46,7 @@ public class SessionFormular {
             calculateMaxWindDirect();
             calculateAvgUVAndNumberMaxSun();
         } else {
-            System.out.println("Không có dữ liệu để tính toán");
+            Utils.log(LOG_FILENAME, "Không có dữ liệu để tính toán");
         }
 
     }
@@ -286,7 +287,6 @@ public class SessionFormular {
             for (String key : keys) {
                 if (rain.containsKey(key)) {
                     rainSMS.append("\n").append(key).append(SMSRule.smsGenerateElement(rain.get(key), SMSRule.getGetRainSMSRule()));
-//                rainSMS.append("\n").append(key).append(" có mưa ").append(String.valueOf(Math.round(rain.get(key) * 10.0) / 10.0)).append("mm xác suất ").append(percentRain.get(key)).append("%");
                 }
             }
         }
@@ -304,7 +304,6 @@ public class SessionFormular {
             report = "Không nắng";
         } else {
             report = "Giờ nắng trong ngày: " + numberMaxSun;
-            ;
         }
 
         return report;
@@ -322,7 +321,6 @@ public class SessionFormular {
             report = "Không nắng";
         } else {
             report = "Trung bình bức xạ trong ngày: " + totalUV;
-            ;
         }
 
         return report;

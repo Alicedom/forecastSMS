@@ -1,5 +1,6 @@
 package getapi.dao;
 
+import getapi.control.Utils;
 import getapi.models.AccuweatherHourly;
 import getapi.models.DarkskyHourly;
 import getapi.models.Station;
@@ -12,11 +13,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Dao {
+    private final String LOG = "data/log/forecastSMS/Dao.txt";
+    private final String ERR_LOG = "data/log/forecastSMS/errDao.txt";
     // connect DB
     private Connection conn = null;
 
     public Dao() {
-        String hostName = "192.168.0.252";
+        String hostName = "172.16.0.252";
         String dbName = "fieldclimate";
         String userName = "root";
         String password = "123456aA";
@@ -26,9 +29,8 @@ public class Dao {
         if (conn == null) {
             try {
                 conn = DriverManager.getConnection(dbURL, userName, password);
-                System.out.println("Connecting...");
             } catch (SQLException ex) {
-                System.err.println("Cannot connect database " + ex);
+                Utils.log(ERR_LOG, ex.getMessage());
             }
         }
     }
@@ -60,7 +62,7 @@ public class Dao {
             statement.close();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            Utils.log(LOG, e.getMessage());
         }
 
         return listStation;
@@ -109,9 +111,7 @@ public class Dao {
             //reset all api
             int resetAPI = statement.executeUpdate(checkToResetCalledSQL);
             if (resetAPI > 0) {
-                System.out.println("Reset: " + resetAPI);
-            } else {
-                System.out.println("No API reset");
+                Utils.log(LOG, "Reset: " + resetAPI);
             }
 
             //get api
@@ -119,22 +119,20 @@ public class Dao {
             while (rs.next()) {
                 apiKey = rs.getString("apikey");
                 id = rs.getString("id");
-                System.out.println("Get API Key: " + apiKey + " for website: " + source);
             }
 
-
             //update api was get
-            if (id != null) {
+            if (id != null || id.isEmpty()) {
+                Utils.log(LOG, "Used apikey + " + id);
                 statement.executeUpdate(updateApiSQL.replace("APIKeyID", id));
-                System.out.println("Update API");
             } else {
-                System.out.println("API have no ID to Update");
+                Utils.log(LOG, "Apikey null ");
             }
 
             statement.close();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            Utils.log(ERR_LOG, e.getMessage());
         }
 
         return apiKey;
@@ -142,7 +140,7 @@ public class Dao {
 
 
     public void saveHourlyData(List listForecast, String station_code, String website) {
-        java.util.Date date= new java.util.Date();
+        java.util.Date date = new java.util.Date();
         String time = new Timestamp(date.getTime()).toString();
 
         if (website.equals("accuweather")) {
@@ -189,18 +187,21 @@ public class Dao {
                 statement.setString(20, windDirect);
                 statement.setFloat(21, forecast.getVisibility());
 
+                //log
+                Utils.log(LOG, statement.toString());
+
                 statement.addBatch();
                 statement.executeBatch();
 
             } catch (SQLException e) {
-                e.printStackTrace();
+                Utils.log(ERR_LOG, e.getMessage());
             }
         }
 
         try {
             statement.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            Utils.log(ERR_LOG, e.getMessage());
         }
 
     }
@@ -258,22 +259,23 @@ public class Dao {
                 }
                 statement.setString(27, liquid_type);
 
+                //log
+                Utils.log(LOG, statement.toString());
+
                 statement.addBatch();
                 statement.executeBatch();
             } catch (SQLException e) {
-                e.printStackTrace();
+                Utils.log(ERR_LOG, e.getMessage());
             }
         }
 
         try {
             statement.close();
         } catch (SQLException e) {
+            Utils.log(ERR_LOG, e.getMessage());
             e.printStackTrace();
         }
     }
-
-
-
 
     //getDataHourly
     public List<HourlyWeather> getDataHourly(String station_code, String website, int after_day) {
@@ -288,7 +290,7 @@ public class Dao {
                 " GROUP BY a.station_code,a.time) ";
 
         //check SQL
-        System.out.println("get data: " + station_code + " website: " + website + " = " + SQL);
+        Utils.log(LOG, "get data: " + station_code + " website: " + website + " = " + SQL);
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
@@ -309,20 +311,9 @@ public class Dao {
             }
 
             stmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
+        } catch (SQLException | NumberFormatException e) {
+            Utils.log(ERR_LOG, e.getMessage());
         }
         return list;
-    }
-
-    public void close() {
-
-        try {
-            conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }

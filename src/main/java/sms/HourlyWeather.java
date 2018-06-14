@@ -21,6 +21,19 @@ public class HourlyWeather {
 
     }
 
+    public HourlyWeather(String time, String station_code, float temperature, float rain, int percent_rain, int uvIndex, float winSpeed, float humidity, int windEdge) {
+        this.time = time;
+        this.station_code = station_code;
+        this.temperature = temperature;
+        this.rain = rain;
+        this.probability = percent_rain;
+        this.uv_index = uvIndex;
+        this.win_speed = winSpeed;
+        this.humidity = humidity;
+        this.wind_edge = windEdge;
+        this.wind_direct = SMSRule.smsGenerateElement(this.wind_edge, SMSRule.getGetWindDirectSMSRule());
+    }
+
     @Override
     public String toString() {
         return "HourlyWeather{" +
@@ -37,20 +50,7 @@ public class HourlyWeather {
                 '}';
     }
 
-    public HourlyWeather(String time, String station_code, float temperature, float rain, int percent_rain, int uvIndex, float winSpeed, float humidity, int windEdge) {
-        this.time = time;
-        this.station_code = station_code;
-        this.temperature = temperature;
-        this.rain = rain;
-        this.probability = percent_rain;
-        this.uv_index = uvIndex;
-        this.win_speed = winSpeed;
-        this.humidity = humidity;
-        this.wind_edge = windEdge;
-        this.wind_direct = SMSRule.smsGenerateElement(this.wind_edge, SMSRule.getGetWindDirectSMSRule());
-    }
-
-    public int getHour(){
+    public int getHour() {
         return Integer.valueOf(time.split(" ")[1].split(":")[0]);
     }
 
@@ -90,7 +90,7 @@ public class HourlyWeather {
         this.rain = rain;
     }
 
-    public void setRain(String rain, String unit) throws NumberFormatException{
+    public void setRain(String rain, String unit) throws NumberFormatException {
         this.rain = Float.valueOf(rain.replace(unit, ""));
     }
 
@@ -110,7 +110,7 @@ public class HourlyWeather {
         this.win_speed = win_speed;
     }
 
-    public void setWin_speed(String winSpeed, String unit) throws NumberFormatException{
+    public void setWin_speed(String winSpeed, String unit) throws NumberFormatException {
         if (unit.contains("m/s")) {
             this.win_speed = Float.valueOf(winSpeed.replace(unit, ""));
         } else if (unit.contains("km/h")) {
@@ -130,7 +130,7 @@ public class HourlyWeather {
         return wind_edge;
     }
 
-    public void setWind_edge(String wind_edge) throws NumberFormatException{
+    public void setWind_edge(String wind_edge) throws NumberFormatException {
         this.wind_edge = Integer.valueOf(wind_edge.replaceAll("[^0-9]", ""));
         this.wind_direct = SMSRule.smsGenerateElement(this.wind_edge, SMSRule.getGetWindDirectSMSRule());
     }

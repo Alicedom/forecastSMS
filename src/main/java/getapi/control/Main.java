@@ -17,12 +17,12 @@ public class Main {
 
 
 //			ScheduledExecutorService executorService = Executors.newScheduledThreadPool(numThread);
-			for (Station station : listStation) {
-				System.out.println(station.toString());
-				Thread saveForecast = new Thread( new ThreadGetForecast(station,"accuweather") );
-				saveForecast.start();
+        for (Station station : listStation) {
+            System.out.println(station.toString());
+            Thread saveForecast = new Thread(new ThreadGetForecast(station, "darksky"));
+            saveForecast.start();
 ////				executorService.scheduleWithFixedDelay(saveForecast, 0, 8, TimeUnit.HOURS);
-			}
+        }
 
     }
 }

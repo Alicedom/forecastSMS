@@ -63,3 +63,6 @@ END
 
 
 
+-- round datetime data in hour
+UPDATE darksky_hourly a SET a.updated_time = DATE_FORMAT(a.updated_time, "%Y-%m-%d %H:00:00");
+
