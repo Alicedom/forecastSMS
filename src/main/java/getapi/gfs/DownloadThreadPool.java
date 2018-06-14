@@ -2,6 +2,7 @@ package getapi.gfs;
 
 import getapi.control.Utils;
 import org.apache.commons.io.FileUtils;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
@@ -12,7 +13,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.*;
 
-import static org.jsoup.Jsoup.connect;
 
 public class DownloadThreadPool {
     private final String LOG = "data/log/forecastSMS/DownloadThreadPool.txt";
@@ -69,7 +69,7 @@ public class DownloadThreadPool {
         String lastDir = null;
         try {
             Document docDir;
-            docDir = connect(urlDir).timeout(10000).get();
+            docDir = Jsoup.connect(urlDir).timeout(10000).get();
             lastDir = docDir.select("table > tbody > tr > td > a").get(indexDir).text().trim(); // back to second link
 
         } catch (IOException e) {
@@ -90,7 +90,7 @@ public class DownloadThreadPool {
         Elements listFile = null;
         try {
             fileURL = fileURL.replace("XXX", dir); // set dir
-            Document fileDir = connect(urlPartFile + dir).timeout(10000).get();
+            Document fileDir = Jsoup.connect(urlPartFile + dir).timeout(10000).get();
             listFile = fileDir.select("body > form > p:nth-child(2) > select > option");
 
         } catch (IOException e) {

@@ -8,10 +8,7 @@ import java.util.ArrayList;
 public class Main {
     public static void main(String[] args) {
         Dao dao = new Dao();
-
-        ArrayList<Station> listStation = null;
-
-        listStation = dao.getStationEnalbeApi();
+        ArrayList<Station> listStation = dao.getStationEnalbeApi();
         int numThread = listStation.size();// kich thuoc cua thread pool
         System.out.println("Number active station: " + numThread);
 
