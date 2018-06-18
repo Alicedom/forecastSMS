@@ -12,11 +12,13 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class GetData {
-    private final String LOG = "data/log/forecastSMS/GetData.txt";
+    private final static Logger logger = LoggerFactory.getLogger(GetData.class);
 
     // doget
     public String doGet(String url) {
@@ -32,7 +34,7 @@ public class GetData {
             HttpEntity entity = response.getEntity();
             data = EntityUtils.toString(entity);
         } catch (Exception e) {
-            Utils.log(LOG, e.getMessage());
+            logger.error(e.getMessage());
         }
 
         return data;
@@ -60,7 +62,8 @@ public class GetData {
         JsonObject jsonObject = (JsonObject) jsonParser.parse(data1);
         String data = jsonObject.get("hourly").toString();
 
-        System.out.println("data hourly: " + data);
+       
+        logger.info("data hourly: " + data);
         Gson gson = new Gson();
         jsonObject = (JsonObject) jsonParser.parse(data);
         TypeToken<List<DarkskyHourly>> token = new TypeToken<List<DarkskyHourly>>() {

@@ -1,9 +1,10 @@
 package getapi.dao;
 
-import getapi.control.Utils;
 import getapi.models.AccuweatherHourly;
 import getapi.models.DarkskyHourly;
 import getapi.models.Station;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sms.HourlyWeather;
 import sms.SMSRule;
 
@@ -13,8 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Dao {
-    private final String LOG = "data/log/forecastSMS/Dao.txt";
-    private final String ERR_LOG = "data/log/forecastSMS/errDao.txt";
+    private final static Logger logger = LoggerFactory.getLogger(Dao.class);
     // connect DB
     private Connection conn = null;
 
@@ -30,7 +30,7 @@ public class Dao {
             try {
                 conn = DriverManager.getConnection(dbURL, userName, password);
             } catch (SQLException ex) {
-                Utils.log(ERR_LOG, ex.getMessage());
+                logger.error(ex.getMessage());
             }
         }
     }
@@ -62,7 +62,7 @@ public class Dao {
             statement.close();
 
         } catch (SQLException e) {
-            Utils.log(LOG, e.getMessage());
+            logger.error(e.getMessage());
         }
 
         return listStation;
@@ -83,7 +83,7 @@ public class Dao {
                 statement.setString(2, station.getStation_code());
                 statement.executeUpdate();
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage());
             }
         }
 
@@ -111,7 +111,7 @@ public class Dao {
             //reset all api
             int resetAPI = statement.executeUpdate(checkToResetCalledSQL);
             if (resetAPI > 0) {
-                Utils.log(LOG, "Reset: " + resetAPI);
+                logger.info("Reset: " + resetAPI);
             }
 
             //get api
@@ -123,16 +123,16 @@ public class Dao {
 
             //update api was get
             if (id != null || id.isEmpty()) {
-                Utils.log(LOG, "Used apikey + " + id);
+                logger.info("Used apikey + " + id);
                 statement.executeUpdate(updateApiSQL.replace("APIKeyID", id));
             } else {
-                Utils.log(LOG, "Apikey null ");
+                logger.info("Apikey null ");
             }
 
             statement.close();
 
         } catch (SQLException e) {
-            Utils.log(ERR_LOG, e.getMessage());
+            logger.error(e.getMessage());
         }
 
         return apiKey;
@@ -188,20 +188,20 @@ public class Dao {
                 statement.setFloat(21, forecast.getVisibility());
 
                 //log
-                Utils.log(LOG, statement.toString());
+                System.out.println("statement = " + statement.toString());
 
                 statement.addBatch();
                 statement.executeBatch();
 
             } catch (SQLException e) {
-                Utils.log(ERR_LOG, e.getMessage());
+                logger.error(e.getMessage());
             }
         }
 
         try {
             statement.close();
         } catch (SQLException e) {
-            Utils.log(ERR_LOG, e.getMessage());
+            logger.error(e.getMessage());
         }
 
     }
@@ -258,22 +258,19 @@ public class Dao {
                     liquid_type = "snow";
                 }
                 statement.setString(27, liquid_type);
-
-                //log
-                Utils.log(LOG, statement.toString());
+                System.out.println("statement.toString() = " + statement.toString());
 
                 statement.addBatch();
                 statement.executeBatch();
             } catch (SQLException e) {
-                Utils.log(ERR_LOG, e.getMessage());
+                logger.error(e.getMessage());
             }
         }
 
         try {
             statement.close();
         } catch (SQLException e) {
-            Utils.log(ERR_LOG, e.getMessage());
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
     }
 
@@ -289,8 +286,7 @@ public class Dao {
                 " WHERE DATE(a.time) = (CURDATE() + INTERVAL " + after_day + " DAY) AND a.station_code = '" + station_code + "'" +
                 " GROUP BY a.station_code,a.time) ";
 
-        //check SQL
-        Utils.log(LOG, "get data: " + station_code + " website: " + website + " = " + SQL);
+
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(SQL);
@@ -312,7 +308,7 @@ public class Dao {
 
             stmt.close();
         } catch (SQLException | NumberFormatException e) {
-            Utils.log(ERR_LOG, e.getMessage());
+            logger.error(e.getMessage());
         }
         return list;
     }

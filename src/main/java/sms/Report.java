@@ -1,11 +1,12 @@
 package sms;
 
-import getapi.control.Utils;
 import getapi.dao.Dao;
 import getapi.models.Station;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.text.Normalizer;
@@ -15,8 +16,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class Report {
-    private final String LOG = "data/log/forecastSMS/Report.txt";
-    private final String ERR_LOG = "data/log/forecastSMS/errReport.txt";
+    private final static Logger logger = LoggerFactory.getLogger(Report.class);
     private final String TEMP_FILENAME = "src/main/resources/template.xlsx";
     private final String OUT_FILENAME = "data/report/Bản tin thời tiết tự động.xlsx";
 
@@ -41,9 +41,9 @@ public class Report {
             templateFile = new FileInputStream(new File(TEMP_FILENAME));
             workbook = new XSSFWorkbook(templateFile);
         } catch (FileNotFoundException e) {
-            Utils.log(ERR_LOG, e.getMessage());
+            logger.error(e.getMessage());
         } catch (IOException e) {
-            Utils.log(ERR_LOG, e.getMessage());
+            logger.error(e.getMessage());
         }
 
         List<Station> listStation = query.getStationEnalbeApi();
@@ -125,7 +125,7 @@ public class Report {
                 cell = sheet.getRow(row).getCell(22);
                 cell.setCellValue(getNonSign(sms));
                 //log
-                Utils.log(LOG, sms);
+                logger.info(sms);
             }
         }
 
@@ -145,9 +145,9 @@ public class Report {
             outFile.close();
 
         } catch (FileNotFoundException e) {
-            Utils.log(ERR_LOG, e.getMessage());
+            logger.error(e.getMessage());
         } catch (IOException e) {
-            Utils.log(ERR_LOG, e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 

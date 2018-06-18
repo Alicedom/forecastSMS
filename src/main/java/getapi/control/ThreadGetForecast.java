@@ -18,11 +18,10 @@ public class ThreadGetForecast implements Runnable {
 
     public void run() {
         Dao dao = new Dao();
-        GetData getData = new GetData();
-
         String apikey = dao.getApiKey(website);
 
         if (apikey != null || apikey.isEmpty()) {
+            GetData getData = new GetData();
             List list = getData.getHourlyForecastFromAPI(station, apikey, website);
             dao.saveHourlyData(list, station.getStation_code(), website);
         }

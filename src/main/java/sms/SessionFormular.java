@@ -1,6 +1,7 @@
 package sms;
 
-import getapi.control.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -12,7 +13,7 @@ import java.util.Map;
  */
 public class SessionFormular {
 
-    private final String LOG_FILENAME = "data/log/forecastSMS/SessionFormular.txt";
+    private final static Logger logger = LoggerFactory.getLogger(SessionFormular.class);
     private List<HourlyWeather> list;
     private float maxTemperature, minTemperature;
     private float averageHumidity;
@@ -37,7 +38,7 @@ public class SessionFormular {
 
         if (list.size() > 0) {
             if (list.size() != 24) {
-                Utils.log(LOG_FILENAME, "Không đủ dữ liệu 24h");
+                logger.info("Không đủ dữ liệu 24h");
             }
             calculateAverageHumidity();
             calculateAverageWindSpeed();
@@ -46,7 +47,7 @@ public class SessionFormular {
             calculateMaxWindDirect();
             calculateAvgUVAndNumberMaxSun();
         } else {
-            Utils.log(LOG_FILENAME, "Không có dữ liệu để tính toán");
+            logger.info("Không có dữ liệu để tính toán");
         }
 
     }

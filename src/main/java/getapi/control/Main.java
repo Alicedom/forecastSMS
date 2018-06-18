@@ -2,10 +2,18 @@ package getapi.control;
 
 import getapi.dao.Dao;
 import getapi.models.Station;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
+    private final static Logger logger = LoggerFactory.getLogger(Main.class);
+
+
     public static void main(String[] args) {
         Dao dao = new Dao();
         ArrayList<Station> listStation = dao.getStationEnalbeApi();
@@ -13,13 +21,30 @@ public class Main {
         System.out.println("Number active station: " + numThread);
 
 
-//			ScheduledExecutorService executorService = Executors.newScheduledThreadPool(numThread);
-        for (Station station : listStation) {
-            System.out.println(station.toString());
-            Thread saveForecast = new Thread(new ThreadGetForecast(station, "darksky"));
-            saveForecast.start();
-////				executorService.scheduleWithFixedDelay(saveForecast, 0, 8, TimeUnit.HOURS);
+        try{
+            ScheduledExecutorService darkService = Executors.newScheduledThreadPool(numThread);
+            for (Station station : listStation) {
+                Thread saveForecast = new Thread(new ThreadGetForecast(station, "darksky"));
+//            saveForecast.start();
+                darkService.scheduleWithFixedDelay(saveForecast, 0, 15, TimeUnit.MINUTES);
+            }
+        }catch (Exception e){
+            logger.error(e.getMessage());
         }
+
+
+        //accuweather chi lay 1 vi key it
+        try {
+            ScheduledExecutorService accuService = Executors.newScheduledThreadPool(1);
+            Station station = listStation.get(0);
+            Thread saveForecast = new Thread(new ThreadGetForecast(station, "accuweather"));
+//            saveForecast.start();
+            accuService.scheduleWithFixedDelay(saveForecast, 0, 30, TimeUnit.MINUTES);
+
+        }catch (Exception e){
+            logger.error(e.getMessage());
+        }
+
 
     }
 }
