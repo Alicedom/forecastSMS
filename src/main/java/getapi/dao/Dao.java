@@ -51,8 +51,8 @@ public class Dao {
                 String station_code = rs.getString("station_code");
                 String station_name = rs.getString("station_name");
                 String station_name_vi = rs.getString("station_name_vi");
-                float lat = rs.getFloat("lat");
-                float lon = rs.getFloat("lon");
+                double lat = rs.getFloat("lat");
+                double lon = rs.getFloat("lon");
                 String accuweather_key = rs.getString("accuweather_key");
 
                 Station station = new Station(station_code, station_name, station_name_vi, lat, lon, accuweather_key);
@@ -165,25 +165,25 @@ public class Dao {
                 statement.setString(1, station_code);
                 statement.setString(2, forecast.getTime());
                 statement.setString(3, forecast.getSummary());
-                statement.setFloat(4, forecast.getPrecipIntensity());
-                statement.setFloat(5, forecast.getPrecipProbability());
+                statement.setDouble(4, forecast.getPrecipIntensity());
+                statement.setDouble(5, forecast.getPrecipProbability());
                 statement.setString(6, forecast.getPrecipType());
-                statement.setFloat(7, forecast.getTemperature());
-                statement.setFloat(8, forecast.getApparentTemperature());
-                statement.setFloat(9, forecast.getDewPoint());
-                statement.setFloat(10, forecast.getHumidity());
-                statement.setFloat(11, forecast.getPressure());
-                statement.setFloat(12, forecast.getWindSpeed());
-                statement.setFloat(13, forecast.getWindGust());
-                statement.setFloat(14, forecast.getWindBearing());
-                statement.setFloat(15, forecast.getCloudCover());
-                statement.setFloat(16, forecast.getUvIndex());
-                statement.setFloat(17, forecast.getOzone());
+                statement.setDouble(7, forecast.getTemperature());
+                statement.setDouble(8, forecast.getApparentTemperature());
+                statement.setDouble(9, forecast.getDewPoint());
+                statement.setDouble(10, forecast.getHumidity());
+                statement.setDouble(11, forecast.getPressure());
+                statement.setDouble(12, forecast.getWindSpeed());
+                statement.setDouble(13, forecast.getWindGust());
+                statement.setDouble(14, forecast.getWindBearing());
+                statement.setDouble(15, forecast.getCloudCover());
+                statement.setDouble(16, forecast.getUvIndex());
+                statement.setDouble(17, forecast.getOzone());
                 statement.setString(18, updated_time);
                 statement.setString(19, forecast.getIcon());
                 String windDirect = SMSRule.smsGenerateElement(forecast.getWindBearing(), SMSRule.getGetWindDirectELRule());
                 statement.setString(20, windDirect);
-                statement.setFloat(21, forecast.getVisibility());
+                statement.setDouble(21, forecast.getVisibility());
 
                 //log
 

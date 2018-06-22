@@ -7,13 +7,13 @@ package sms;
 public class HourlyWeather {
     private String time;
     private String station_code;
-    private float temperature;
-    private float rain;
-    private int probability;
+    private double temperature;
+    private double rain;
+    private double probability;
     private int uv_index;
-    private float win_speed;
-    private float humidity;
-    private int wind_edge;
+    private double win_speed;
+    private double humidity;
+    private double wind_edge;
     private String wind_direct;
 
 
@@ -21,7 +21,7 @@ public class HourlyWeather {
 
     }
 
-    public HourlyWeather(String time, String station_code, float temperature, float rain, int percent_rain, int uvIndex, float winSpeed, float humidity, int windEdge) {
+    public HourlyWeather(String time, String station_code, double temperature, double rain, int percent_rain, int uvIndex, double winSpeed, double humidity, int windEdge) {
         this.time = time;
         this.station_code = station_code;
         this.temperature = temperature;
@@ -70,11 +70,11 @@ public class HourlyWeather {
         this.station_code = station_code;
     }
 
-    public float getTemperature() {
+    public double getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(float temperature) {
+    public void setTemperature(double temperature) {
         this.temperature = temperature;
     }
 
@@ -82,11 +82,11 @@ public class HourlyWeather {
         this.temperature = Float.valueOf(temperature.replace(unit, ""));
     }
 
-    public float getRain() {
+    public double getRain() {
         return rain;
     }
 
-    public void setRain(float rain) {
+    public void setRain(double rain) {
         this.rain = rain;
     }
 
@@ -102,11 +102,11 @@ public class HourlyWeather {
         this.uv_index = uv_index;
     }
 
-    public float getWin_speed() {
+    public double getWin_speed() {
         return win_speed;
     }
 
-    public void setWin_speed(float win_speed) {
+    public void setWin_speed(double win_speed) {
         this.win_speed = win_speed;
     }
 
@@ -118,15 +118,15 @@ public class HourlyWeather {
         }
     }
 
-    public float getHumidity() {
+    public double getHumidity() {
         return humidity;
     }
 
-    public void setHumidity(float humidity) {
+    public void setHumidity(double humidity) {
         this.humidity = humidity;
     }
 
-    public int getWind_edge() {
+    public double getWind_edge() {
         return wind_edge;
     }
 
@@ -135,7 +135,7 @@ public class HourlyWeather {
         this.wind_direct = SMSRule.smsGenerateElement(this.wind_edge, SMSRule.getGetWindDirectSMSRule());
     }
 
-    public int getProbability() {
+    public double getProbability() {
         return probability;
     }
 

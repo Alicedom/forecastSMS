@@ -15,26 +15,26 @@ public class SessionFormular {
 
     private final static Logger logger = LoggerFactory.getLogger(SessionFormular.class);
     private List<HourlyWeather> list;
-    private float maxTemperature, minTemperature;
-    private float averageHumidity;
+    private double maxTemperature, minTemperature;
+    private double averageHumidity;
     private String maxWindDirect;
-    private float averageWindSpeed;
+    private double averageWindSpeed;
     private int numberMaxSun;
-    private float totalUV;
-    private Hashtable<String, Float> rain;
-    private Hashtable<String, Integer> percentRain;
+    private double totalUV;
+    private Hashtable<String, Double> rain;
+    private Hashtable<String, Double> percentRain;
 
     public SessionFormular(List<HourlyWeather> list) {
         this.list = list;
 
-        maxTemperature = Float.MIN_VALUE;
-        minTemperature = Float.MAX_VALUE;
+        maxTemperature = Double.MIN_VALUE;
+        minTemperature = Double.MAX_VALUE;
         averageHumidity = 0;
         averageWindSpeed = 0.0f;
         numberMaxSun = 0;
         totalUV = 0;
-        rain = new Hashtable<String, Float>();
-        percentRain = new Hashtable<String, Integer>();
+        rain = new Hashtable<String, Double>();
+        percentRain = new Hashtable<String, Double>();
 
         if (list.size() > 0) {
             if (list.size() != 24) {
@@ -76,7 +76,7 @@ public class SessionFormular {
 
     private void calculateAverageWindSpeed() {
 
-        float totalWindSpeed = 0;
+        double totalWindSpeed = 0;
 
         for (HourlyWeather data : list) {
             totalWindSpeed += data.getWin_speed();
@@ -103,7 +103,7 @@ public class SessionFormular {
     private void calculateMinMaxTemperatue() {
 
         for (HourlyWeather data : list) {
-            float temperature = data.getTemperature();
+            double temperature = data.getTemperature();
             if (temperature > maxTemperature) maxTemperature = temperature;
             if (temperature < minTemperature) minTemperature = temperature;
         }
@@ -132,7 +132,7 @@ public class SessionFormular {
         while (iter.hasMoreElements()) {
             String key = iter.nextElement();
 
-            float rainmount = (float) (Math.round(rain.get(key) * 10.0) / 10.0);
+            double rainmount = (double) (Math.round(rain.get(key) * 10.0) / 10.0);
             if (rainmount == 0 || percentRain.get(key) < 20) {
                 rain.remove(key);
                 percentRain.remove(key);
@@ -173,13 +173,13 @@ public class SessionFormular {
         return SMSRule.getSession(data.getHour());
     }
 
-    private String getTypeOfSun(float uvData) {
+    private String getTypeOfSun(double uvData) {
         return SMSRule.smsGenerateElement(uvData, SMSRule.getUvSMSRule());
     }
 
     public String getMaxTemperature() {
 
-        if (maxTemperature == Float.MIN_VALUE)
+        if (maxTemperature == Double.MIN_VALUE)
             return "";
         else
             return String.valueOf(String.valueOf(Math.round(maxTemperature)));
@@ -216,7 +216,7 @@ public class SessionFormular {
         return report;
     }
 
-    public int getAverageHumidity() {
+    public double getAverageHumidity() {
         return Math.round(averageHumidity);
     }
 
@@ -232,8 +232,8 @@ public class SessionFormular {
         return report;
     }
 
-    public float getAverageWindSpeed() {
-        return (float) (Math.round(averageWindSpeed * 10.0) / 10.0);
+    public double getAverageWindSpeed() {
+        return (double) (Math.round(averageWindSpeed * 10.0) / 10.0);
     }
 
     public String getReport_AverageWindSpeed() {
@@ -264,13 +264,13 @@ public class SessionFormular {
         return report;
     }
 
-    public Hashtable<String, Float> getRain() {
+    public Hashtable<String, Double> getRain() {
 
         // lam tron trong tinh toan
         return rain;
     }
 
-    public Hashtable<String, Integer> getPercentRain() {
+    public Hashtable<String, Double> getPercentRain() {
         return percentRain;
     }
 
@@ -309,7 +309,7 @@ public class SessionFormular {
 
     }
 
-    public float getTotalUV() {
+    public double getTotalUV() {
         return totalUV;
     }
 

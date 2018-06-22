@@ -7,21 +7,21 @@ public class DarkskyHourly {
     private String time;
     private String summary;
     private String icon;
-    private float precipIntensity;
-    private float precipProbability;
+    private double precipIntensity;
+    private double precipProbability;
     private String precipType;
-    private float temperature;
-    private float apparentTemperature;
-    private float dewPoint;
-    private float humidity;
-    private float pressure;
-    private float windSpeed;
-    private float windGust;
-    private float windBearing;
-    private float cloudCover;
-    private float uvIndex;
-    private float ozone;
-    private float visibility;
+    private double temperature;
+    private double apparentTemperature;
+    private double dewPoint;
+    private double humidity;
+    private double pressure;
+    private double windSpeed;
+    private double windGust;
+    private double windBearing;
+    private double cloudCover;
+    private double uvIndex;
+    private double ozone;
+    private double visibility;
 
     public String getTime() {
         String str = time + "000";
@@ -51,11 +51,11 @@ public class DarkskyHourly {
         this.icon = icon;
     }
 
-    public float getPrecipIntensity() {
+    public double getPrecipIntensity() {
         return precipIntensity;
     }
 
-    public void setPrecipIntensity(float precipIntensity) {
+    public void setPrecipIntensity(double precipIntensity) {
         this.precipIntensity = precipIntensity;
     }
 
@@ -63,7 +63,7 @@ public class DarkskyHourly {
         return (int) (precipProbability * 100);
     }
 
-    public void setPrecipProbability(float precipProbability) {
+    public void setPrecipProbability(double precipProbability) {
         this.precipProbability = precipProbability;
     }
 
@@ -75,27 +75,27 @@ public class DarkskyHourly {
         this.precipType = precipType;
     }
 
-    public float getTemperature() {
+    public double getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(float temperature) {
+    public void setTemperature(double temperature) {
         this.temperature = temperature;
     }
 
-    public Float getApparentTemperature() {
+    public double getApparentTemperature() {
         return apparentTemperature;
     }
 
-    public void setApparentTemperature(float apparentTemperature) {
+    public void setApparentTemperature(double apparentTemperature) {
         this.apparentTemperature = apparentTemperature;
     }
 
-    public float getDewPoint() {
+    public double getDewPoint() {
         return dewPoint;
     }
 
-    public void setDewPoint(float dewPoint) {
+    public void setDewPoint(double dewPoint) {
         this.dewPoint = dewPoint;
     }
 
@@ -103,39 +103,39 @@ public class DarkskyHourly {
         return (int) (humidity * 100);
     }
 
-    public void setHumidity(float humidity) {
+    public void setHumidity(double humidity) {
         this.humidity = humidity;
     }
 
-    public float getPressure() {
+    public double getPressure() {
         return pressure;
     }
 
-    public void setPressure(float pressure) {
+    public void setPressure(double pressure) {
         this.pressure = pressure;
     }
 
-    public float getWindSpeed() {
+    public double getWindSpeed() {
         return windSpeed;
     }
 
-    public void setWindSpeed(float windSpeed) {
+    public void setWindSpeed(double windSpeed) {
         this.windSpeed = windSpeed;
     }
 
-    public float getWindGust() {
+    public double getWindGust() {
         return windGust;
     }
 
-    public void setWindGust(float windGust) {
+    public void setWindGust(double windGust) {
         this.windGust = windGust;
     }
 
-    public float getWindBearing() {
+    public double getWindBearing() {
         return windBearing;
     }
 
-    public void setWindBearing(float windBearing) {
+    public void setWindBearing(double windBearing) {
         this.windBearing = windBearing;
     }
 
@@ -143,31 +143,31 @@ public class DarkskyHourly {
         return (int) (100 * cloudCover);
     }
 
-    public void setCloudCover(float cloudCover) {
+    public void setCloudCover(double cloudCover) {
         this.cloudCover = cloudCover;
     }
 
-    public float getUvIndex() {
+    public double getUvIndex() {
         return uvIndex;
     }
 
-    public void setUvIndex(float uvIndex) {
+    public void setUvIndex(double uvIndex) {
         this.uvIndex = uvIndex;
     }
 
-    public float getOzone() {
+    public double getOzone() {
         return ozone;
     }
 
-    public void setOzone(float ozone) {
+    public void setOzone(double ozone) {
         this.ozone = ozone;
     }
 
-    public float getVisibility() {
+    public double getVisibility() {
         return visibility;
     }
 
-    public void setVisibility(float visibility) {
+    public void setVisibility(double visibility) {
         this.visibility = visibility;
     }
 }

@@ -1,7 +1,5 @@
 package sms;
 
-import java.time.temporal.ChronoUnit;
-
 public class GetTemplateForecatInSession {
 
 

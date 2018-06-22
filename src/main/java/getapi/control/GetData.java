@@ -62,7 +62,7 @@ public class GetData {
         String data = jsonObject.get("hourly").toString();
 
        
-        logger.info("data hourly: " + data);
+//        logger.info("data hourly: " + data);
         Gson gson = new Gson();
         jsonObject = (JsonObject) jsonParser.parse(data);
         TypeToken<List<DarkskyHourly>> token = new TypeToken<List<DarkskyHourly>>() {

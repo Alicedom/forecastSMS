@@ -78,7 +78,7 @@ public class Report {
                         sms = "Trạm " + station.getStation_name_vi() + " tính trên số giờ dữ liệu " + listStationHourlyData.size() + getSMSReport(date, formular);
                     }
 
-                    float sumUV = formular.getTotalUV();
+                    double sumUV = formular.getTotalUV();
                     cell = sheet.getRow(row).getCell(1);
                     cell.setCellValue(sumUV);
 
@@ -90,7 +90,7 @@ public class Report {
                     cell = sheet.getRow(row).getCell(17);
                     cell.setCellValue(minTem);
 
-                    float humidity = formular.getAverageHumidity();
+                    double humidity = formular.getAverageHumidity();
                     cell = sheet.getRow(row).getCell(18);
                     cell.setCellValue(humidity);
 
@@ -98,18 +98,18 @@ public class Report {
                     cell = sheet.getRow(row).getCell(19);
                     cell.setCellValue(maxWinddirect);
 
-                    float avgWindSpeed = formular.getAverageWindSpeed();
+                    double avgWindSpeed = formular.getAverageWindSpeed();
                     cell = sheet.getRow(row).getCell(20);
                     cell.setCellValue(avgWindSpeed);
 
-                    Hashtable<String, Float> rain = formular.getRain();
-                    Hashtable<String, Integer> percentRain = formular.getPercentRain();
+                    Hashtable<String, Double> rain = formular.getRain();
+                    Hashtable<String, Double> percentRain = formular.getPercentRain();
 
                     if (!rain.isEmpty()) {
                         List<String> session = SMSRule.getListSMS(SMSRule.getSession());
                         for (int j = 0; j < session.size(); j++) {
                             if (rain.containsKey(session.get(j))) {
-                                float mount = (float) (Math.round(rain.get(session.get(j)) * 10.0) / 10.0);
+                                double mount = (double) (Math.round(rain.get(session.get(j)) * 10.0) / 10.0);
                                 cell = sheet.getRow(row).getCell(2 + j);
                                 cell.setCellValue(mount);
                                 cell = sheet.getRow(row).getCell(3 + j);

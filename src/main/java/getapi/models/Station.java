@@ -4,11 +4,11 @@ public class Station {
     private String station_code;
     private String station_name;
     private String station_name_vi;
-    private float lat;
-    private float lon;
+    private double lat;
+    private double lon;
     private String accuweather_key;
 
-    public Station(String station_code, String station_name, String station_name_vi, float lat, float lon, String accuweather_key) {
+    public Station(String station_code, String station_name, String station_name_vi, double lat, double lon, String accuweather_key) {
         this.station_code = station_code;
         this.station_name = station_name;
         this.station_name_vi = station_name_vi;
@@ -53,19 +53,19 @@ public class Station {
         this.station_name_vi = station_name_vi;
     }
 
-    public float getLat() {
+    public double getLat() {
         return lat;
     }
 
-    public void setLat(float lat) {
+    public void setLat(double lat) {
         this.lat = lat;
     }
 
-    public float getLon() {
+    public double getLon() {
         return lon;
     }
 
-    public void setLon(float lon) {
+    public void setLon(double lon) {
         this.lon = lon;
     }
 

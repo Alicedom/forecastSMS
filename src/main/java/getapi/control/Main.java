@@ -34,7 +34,7 @@ public class Main {
             ScheduledExecutorService accuService = Executors.newScheduledThreadPool(1);
             Thread saveForecast = new Thread(new ThreadGetForecast(listStation, "accuweather"));
 //            saveForecast.start();
-            accuService.scheduleWithFixedDelay(saveForecast, 0, 3, TimeUnit.HOURS);
+            accuService.scheduleWithFixedDelay(saveForecast, 0, 1, TimeUnit.HOURS);
 
         } catch (Exception e) {
             logger.error(e.getMessage());

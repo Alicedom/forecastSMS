@@ -128,19 +128,19 @@ public class SMSRule {
         return listSMS;
     }
 
-    public static String smsGenerateElement(float data, Object[][] rules) {
+    public static String smsGenerateElement(double data, Object[][] rules) {
         String sms = "Ngoài ngưỡng " + rules.getClass().getName();
 
-        float leftBound, rightBound;
+        double leftBound, rightBound;
 
         for (Object[] rule : rules) {
             if (rule[0] != null)
-                leftBound = Float.valueOf(rule[0].toString());
-            else leftBound = Float.MIN_VALUE;
+                leftBound = Double.valueOf(rule[0].toString());
+            else leftBound = Double.MIN_VALUE;
 
             if (rule[1] != null)
-                rightBound = Float.valueOf(rule[1].toString());
-            else rightBound = Float.MAX_VALUE;
+                rightBound = Double.valueOf(rule[1].toString());
+            else rightBound = Double.MAX_VALUE;
 
             if (leftBound <= data && data < rightBound)
                 sms = rule[2].toString();
