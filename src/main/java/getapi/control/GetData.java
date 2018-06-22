@@ -30,7 +30,6 @@ public class GetData {
             HttpGet httpGet = new HttpGet(url);
             response = client.execute(httpGet);
             int responseCode = response.getStatusLine().getStatusCode();
-            System.out.println(responseCode);
             HttpEntity entity = response.getEntity();
             data = EntityUtils.toString(entity);
         } catch (Exception e) {
@@ -78,7 +77,7 @@ public class GetData {
 
         URL = URL.replace("locationKey", station.getAccuweather_key()).replace("accuweatherKey", accuweatherKey);
         String json = doGet(URL);
-        System.out.println(json);
+
         Gson gson = new Gson();
         TypeToken<List<AccuweatherHourly>> token = new TypeToken<List<AccuweatherHourly>>() {
         };

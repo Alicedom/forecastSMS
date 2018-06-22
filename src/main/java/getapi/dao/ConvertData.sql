@@ -64,5 +64,18 @@ END
 
 
 -- round datetime data in hour
-UPDATE darksky_hourly a SET a.updated_time = DATE_FORMAT(a.updated_time, "%Y-%m-%d %H:00:00");
+UPDATE darksky_hourly a SET a.updated_time = DATE_FORMAT(a.updated_time, "%Y-%m-%d %H:%i:00");
+
+-- delete duplicate gfs025
+DELETE n1
+FROM
+	gfs025_hourly n1,
+	gfs025_hourly n2
+WHERE
+	n1.id > n2.id
+AND n1.station_code = n2.station_code
+AND n1.time = n2.time
+AND n1.updated_time = n2.updated_time
+AND n1.dir = n2.dir
+AND n1.file = n2.file
 

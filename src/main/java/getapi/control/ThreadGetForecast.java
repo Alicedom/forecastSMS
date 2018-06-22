@@ -3,29 +3,36 @@ package getapi.control;
 import getapi.dao.Dao;
 import getapi.models.Station;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 public class ThreadGetForecast implements Runnable {
 
-    private Station station;
+    private List<Station> stationList;
     private String website;
 
-    public ThreadGetForecast(Station station, String website) {
-        this.station = station;
+    public ThreadGetForecast(List<Station> stationList, String website) {
+        this.stationList = stationList;
         this.website = website;
     }
 
 
     public void run() {
-        Dao dao = new Dao();
-        String apikey = dao.getApiKey(website);
+        java.util.Date date = new java.util.Date();
+        final String time = new Timestamp(date.getTime()).toString();
 
-        if (apikey != null || apikey.isEmpty()) {
-            GetData getData = new GetData();
-            List list = getData.getHourlyForecastFromAPI(station, apikey, website);
-            dao.saveHourlyData(list, station.getStation_code(), website);
+        for (Station station: stationList) {
+            Dao dao = new Dao();
+            String apikey = dao.getApiKey(website);
+
+            if (apikey != null || apikey.isEmpty()) {
+                GetData getData = new GetData();
+                List list = getData.getHourlyForecastFromAPI(station, apikey, website);
+                dao.saveHourlyData(list, station.getStation_code(), website, time);
+            }
+
+            dao.close();
         }
-
 
     }
 }

@@ -139,9 +139,7 @@ public class Dao {
     }
 
 
-    public void saveHourlyData(List listForecast, String station_code, String website) {
-        java.util.Date date = new java.util.Date();
-        String time = new Timestamp(date.getTime()).toString();
+    public void saveHourlyData(List listForecast, String station_code, String website, String time) {
 
         if (website.equals("accuweather")) {
             saveAccuweatherHourlyData(listForecast, station_code, time);
@@ -188,7 +186,6 @@ public class Dao {
                 statement.setFloat(21, forecast.getVisibility());
 
                 //log
-                System.out.println("statement = " + statement.toString());
 
                 statement.addBatch();
                 statement.executeBatch();
@@ -258,8 +255,6 @@ public class Dao {
                     liquid_type = "snow";
                 }
                 statement.setString(27, liquid_type);
-                System.out.println("statement.toString() = " + statement.toString());
-
                 statement.addBatch();
                 statement.executeBatch();
             } catch (SQLException e) {
@@ -282,7 +277,7 @@ public class Dao {
 
         String SQL = "SELECT a.time,a.station_code,a.total_liquid,a.probability,a.temperature,a.uv_index,a.humidity,a.wind_speed,a.wind_edge" +
                 " FROM " + tableHourly + " a" +
-                " WHERE a.id IN (SELECT\tMAX(id) AS id FROM " + tableHourly + " a " +
+                " WHERE a.id IN (SELECT MAX(id) AS id FROM " + tableHourly + " a " +
                 " WHERE DATE(a.time) = (CURDATE() + INTERVAL " + after_day + " DAY) AND a.station_code = '" + station_code + "'" +
                 " GROUP BY a.station_code,a.time) ";
 
@@ -311,5 +306,13 @@ public class Dao {
             logger.error(e.getMessage());
         }
         return list;
+    }
+
+    public  void close(){
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

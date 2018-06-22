@@ -153,7 +153,6 @@ public class SessionFormular {
                 listSun.put(typeOfSun, 1);
         }
 
-        System.out.println("listSun.toString() = " + listSun.toString());
     }
 
     private void calculateAvgUVAndNumberMaxSun() {
@@ -282,7 +281,6 @@ public class SessionFormular {
             rainSMS.append("Không mưa");
         } else {
             List<String> keys = SMSRule.getListSMS(SMSRule.getSession());
-            System.out.println(keys.toString());
 
             rainSMS.append("Dự báo buổi mưa:");
             for (String key : keys) {

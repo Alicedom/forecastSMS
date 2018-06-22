@@ -18,30 +18,25 @@ public class Main {
         Dao dao = new Dao();
         ArrayList<Station> listStation = dao.getStationEnalbeApi();
         int numThread = listStation.size();// kich thuoc cua thread pool
-        System.out.println("Number active station: " + numThread);
 
-
-        try{
+        try {
             ScheduledExecutorService darkService = Executors.newScheduledThreadPool(numThread);
-            for (Station station : listStation) {
-                Thread saveForecast = new Thread(new ThreadGetForecast(station, "darksky"));
+
+            Thread saveForecast = new Thread(new ThreadGetForecast(listStation, "darksky"));
 //            saveForecast.start();
-                darkService.scheduleWithFixedDelay(saveForecast, 0, 15, TimeUnit.MINUTES);
-            }
-        }catch (Exception e){
+            darkService.scheduleWithFixedDelay(saveForecast, 0, 1, TimeUnit.HOURS);
+
+        } catch (Exception e) {
             logger.error(e.getMessage());
         }
 
-
-        //accuweather chi lay 1 vi key it
         try {
             ScheduledExecutorService accuService = Executors.newScheduledThreadPool(1);
-            Station station = listStation.get(0);
-            Thread saveForecast = new Thread(new ThreadGetForecast(station, "accuweather"));
+            Thread saveForecast = new Thread(new ThreadGetForecast(listStation, "accuweather"));
 //            saveForecast.start();
-            accuService.scheduleWithFixedDelay(saveForecast, 0, 30, TimeUnit.MINUTES);
+            accuService.scheduleWithFixedDelay(saveForecast, 0, 3, TimeUnit.HOURS);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
         }
 
