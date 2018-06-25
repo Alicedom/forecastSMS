@@ -90,7 +90,7 @@ public class Dao {
         try {
             statement.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+           logger.error(e.getMessage());
         }
 
     }
@@ -99,8 +99,8 @@ public class Dao {
         String apiKey = null;
         String id = null;
 
-        String checkToResetCalledSQL = "UPDATE apikey a SET a.called_inday = 0 WHERE DATE(a.last_called) < CURDATE() AND a.dead = 0";
-        String getApiKeySQL = "SELECT a.id, a.apikey FROM `apikey` a WHERE a.website = '" + source + "' AND a.called_inday < a.max_number AND a.dead = 0 LIMIT 1;";
+        String checkToResetCalledSQL = "UPDATE apikey a SET a.called_inday = 0, a.last_called = NOW() WHERE DATE(a.last_called) < CURDATE() AND a.dead = 0";
+        String getApiKeySQL = "SELECT a.id, a.apikey FROM `apikey` a WHERE a.website = '" + source + "' AND a.called_inday < a.max_number AND a.dead = 0 LIMIT 1";
         String updateApiSQL = "UPDATE apikey SET called_inday = called_inday + 1, apikey.last_called = NOW() WHERE apikey.id = 'APIKeyID'";
 
         Statement statement = null;

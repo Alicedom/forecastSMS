@@ -29,7 +29,6 @@ public class GetData {
         try {
             HttpGet httpGet = new HttpGet(url);
             response = client.execute(httpGet);
-            int responseCode = response.getStatusLine().getStatusCode();
             HttpEntity entity = response.getEntity();
             data = EntityUtils.toString(entity);
         } catch (Exception e) {

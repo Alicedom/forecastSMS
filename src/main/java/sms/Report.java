@@ -133,7 +133,7 @@ public class Report {
         try {
             outFile = new FileOutputStream(new File(OUT_FILENAME), true);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
         }
 
         try {

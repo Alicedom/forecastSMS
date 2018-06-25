@@ -18,6 +18,7 @@ public class Main {
         Dao dao = new Dao();
         ArrayList<Station> listStation = dao.getStationEnalbeApi();
         int numThread = listStation.size();// kich thuoc cua thread pool
+        dao.close();
 
         try {
             ScheduledExecutorService darkService = Executors.newScheduledThreadPool(numThread);
