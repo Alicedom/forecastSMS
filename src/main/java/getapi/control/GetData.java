@@ -8,6 +8,7 @@ import getapi.models.AccuweatherHourly;
 import getapi.models.DarkskyHourly;
 import getapi.models.Station;
 import org.apache.http.HttpEntity;
+import org.apache.http.ParseException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
@@ -45,6 +46,8 @@ public class GetData {
         } else if (website.equals("darksky")) {
             listData = getDarkskyHourlyForecastFromAPI(station, apiKey);
         }
+
+        logger.info(website + apiKey + "data hourly: " + listData.size());
         return listData;
     }
 
@@ -56,31 +59,41 @@ public class GetData {
         url = url.replace("darkkey", darkskyKey).replace("latlon", station.getLat() + "," + station.getLon());
 
         String data1 = doGet(url);
-        JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = (JsonObject) jsonParser.parse(data1);
-        String data = jsonObject.get("hourly").toString();
 
-       
-//        logger.info("data hourly: " + data);
-        Gson gson = new Gson();
-        jsonObject = (JsonObject) jsonParser.parse(data);
-        TypeToken<List<DarkskyHourly>> token = new TypeToken<List<DarkskyHourly>>() {
-        };
-        listForecast = gson.fromJson(jsonObject.get("data").toString(), token.getType());
+        try {
+            JsonParser jsonParser = new JsonParser();
+            JsonObject jsonObject = (JsonObject) jsonParser.parse(data1);
+            String data = jsonObject.get("hourly").toString();
+
+            Gson gson = new Gson();
+            jsonObject = (JsonObject) jsonParser.parse(data);
+            TypeToken<List<DarkskyHourly>> token = new TypeToken<List<DarkskyHourly>>() {
+            };
+
+            listForecast = gson.fromJson(jsonObject.get("data").toString(), token.getType());
+        } catch (ParseException e) {
+            logger.error(e.getMessage());
+        }
+
         return listForecast;
     }
 
     // get accuweather hourly forcast form api
     private List<AccuweatherHourly> getAccuweatherHourlyForecastFromAPI(Station station, String accuweatherKey) {
+        List<AccuweatherHourly> listForecast = null;
         String URL = "http://dataservice.accuweather.com/forecasts/v1/hourly/12hour/locationKey?apikey=accuweatherKey&details=true&metric=true";
 
         URL = URL.replace("locationKey", station.getAccuweather_key()).replace("accuweatherKey", accuweatherKey);
         String json = doGet(URL);
+        try {
+            Gson gson = new Gson();
+            TypeToken<List<AccuweatherHourly>> token = new TypeToken<List<AccuweatherHourly>>() {
+            };
+            listForecast = gson.fromJson(json, token.getType());
+        } catch (ParseException e) {
+            logger.error(e.getMessage());
+        }
 
-        Gson gson = new Gson();
-        TypeToken<List<AccuweatherHourly>> token = new TypeToken<List<AccuweatherHourly>>() {
-        };
-        List<AccuweatherHourly> listForecast = gson.fromJson(json, token.getType());
         return listForecast;
     }
 
@@ -93,5 +106,4 @@ public class GetData {
 
         return locationKey;
     }
-
 }
