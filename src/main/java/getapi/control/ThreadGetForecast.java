@@ -12,10 +12,12 @@ public class ThreadGetForecast implements Runnable {
 
     private List<Station> stationList;
     private String website;
+    private String type;
 
-    public ThreadGetForecast(List<Station> stationList, String website) {
+    public ThreadGetForecast(List<Station> stationList, String website, String type) {
         this.stationList = stationList;
         this.website = website;
+        this.type = type;
     }
 
     private final static Logger logger = LoggerFactory.getLogger(ThreadGetForecast.class);
@@ -31,9 +33,9 @@ public class ThreadGetForecast implements Runnable {
 
                 if (apikey != null || apikey.isEmpty()) {
                     GetData getData = new GetData();
-                    List list = getData.getHourlyForecastFromAPI(station, apikey, website);
+                    List list = getData.getHourlyForecastFromAPI(station, apikey, website, type);
                     if (list != null) {
-                        dao.saveHourlyData(list, station.getStation_code(), website, time);
+                        dao.saveData(list, station.getStation_code(), website, type, time);
                     }
                 }
 

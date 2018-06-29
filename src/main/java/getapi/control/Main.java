@@ -4,7 +4,9 @@ import getapi.dao.Dao;
 import getapi.models.Station;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sms.Utils;
 
+import java.io.UTFDataFormatException;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -23,7 +25,7 @@ public class Main {
         try {
             ScheduledExecutorService darkService = Executors.newScheduledThreadPool(numThread);
 
-            Thread saveForecast = new Thread(new ThreadGetForecast(listStation, "darksky"));
+            Thread saveForecast = new Thread(new ThreadGetForecast(listStation, Utils.DARKSKY,Utils.HOURLY));
 //            saveForecast.start();
             darkService.scheduleWithFixedDelay(saveForecast, 0, 1, TimeUnit.HOURS);
 
@@ -33,7 +35,7 @@ public class Main {
 
         try {
             ScheduledExecutorService accuService = Executors.newScheduledThreadPool(1);
-            Thread saveForecast = new Thread(new ThreadGetForecast(listStation, "accuweather"));
+            Thread saveForecast = new Thread(new ThreadGetForecast(listStation, Utils.ACCUWEATHER,Utils.HOURLY));
 //            saveForecast.start();
             accuService.scheduleWithFixedDelay(saveForecast, 0, 1, TimeUnit.HOURS);
 

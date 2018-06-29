@@ -10,6 +10,13 @@ import java.text.SimpleDateFormat;
 
 public class Utils {
 
+    public static final String HOURLY ="hourly";
+    public static final String DAILY ="daily";
+    public static final String ACCUWEATHER = "accuweather";
+    public static final String DARKSKY ="darksky";
+    public static final String FI="fieldclimate";
+    public static final String GF="gfs025";
+
 
     public static String getCurTime() {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

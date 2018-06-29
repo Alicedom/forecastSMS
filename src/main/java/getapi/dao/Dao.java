@@ -1,8 +1,6 @@
 package getapi.dao;
 
-import getapi.models.AccuweatherHourly;
-import getapi.models.DarkskyHourly;
-import getapi.models.Station;
+import getapi.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sms.HourlyWeather;
@@ -90,7 +88,7 @@ public class Dao {
         try {
             statement.close();
         } catch (SQLException e) {
-           logger.error(e.getMessage());
+            logger.error(e.getMessage());
         }
 
     }
@@ -139,13 +137,20 @@ public class Dao {
     }
 
 
-    public void saveHourlyData(List listForecast, String station_code, String website, String time) {
+    public void saveData(List listForecast, String station_code, String website, String type, String time) {
 
-        if (website.equals("accuweather")) {
+        if (website.equals("accuweather") && type.equals("hourly")) {
             saveAccuweatherHourlyData(listForecast, station_code, time);
-        } else if (website.equals("darksky")) {
+        } else if (website.equals("darksky") && type.equals(("hourly"))) {
             saveDarkskyHourlyData(listForecast, station_code, time);
+        } else if (website.equals("darksky") && type.equals(("daily"))) {
+            saveDarkskyDailyData(listForecast, station_code, time);
         }
+
+    }
+
+    private void saveDarkskyDailyData(List listForecast, String station_code, String time) {
+
 
     }
 
@@ -308,7 +313,7 @@ public class Dao {
         return list;
     }
 
-    public  void close(){
+    public void close() {
         try {
             conn.close();
         } catch (SQLException e) {
